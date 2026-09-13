@@ -1,0 +1,71 @@
+:root {
+    /* ========================================
+        BarberSlot - web/src/styles/theme.css
+    ======================================== */
+
+    /* ========================================
+        Colores de la Marca
+    ======================================== */
+
+    --brand-gold: #d4a65a;
+    --brand-black: #111111;
+    --brand-dark: #10131a;
+    --brand-dark-soft: #404248;
+    --brand-white: #ffffff;
+    --brand-footer: #ececec;
+    --brand-gray: #b7b8ba;
+    --brand-success: #60d45a;
+
+    /* ========================================
+        Colores de Administrador
+    ======================================== */
+    --status-success: #22c55e;
+    --status-warning: #d4a65a;
+    --status-danger: #ef4444;
+    --admin-surface: #171a21;
+    --admin-border: #8f713b;
+
+    /* ========================================
+        Textos
+    ======================================== */
+
+    --text-primary: #111111;
+    --text-light: #ffffff;
+    --text-muted: #b7b8ba;
+
+    /* ========================================
+        Fondos
+    ======================================== */
+
+    --background-main: #ffffff;
+    --background-dark: #10131a;
+    --background-header: #111111;
+    --background-footer: #ececec;
+
+    /* ========================================
+        Bordes
+    ======================================== */
+
+    --border-light: #d9d9d9;
+
+    /* ========================================
+        Radio de Bordes
+    ======================================== */
+
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-pill: 9999px;
+
+    /* ========================================
+        Sombras
+    ======================================== */
+
+    --shadow-card: 0 4px 6px rgba(0, 0, 0, 0.15);
+
+    /* ========================================
+        Diseños
+    ======================================== */
+
+    --content-max-width: 1440px;
+}

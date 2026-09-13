@@ -1,26 +1,202 @@
 @import "tailwindcss";
+@import "../styles/theme.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* =============================================
+    Tailwind Theme - web/src/app/globals.css
+============================================= */
+
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+    --color-brand-gold: var(--brand-gold);
+    --color-brand-black: var(--brand-black);
+    --color-brand-dark: var(--brand-dark);
+    --color-brand-dark-soft: var(--brand-dark-soft);
+    --color-brand-white: var(--brand-white);
+    --color-brand-footer: var(--brand-footer);
+    --color-brand-gray: var(--brand-gray);
+    --color-brand-success: var(--brand-success);
+    --font-sans: var(--font-montserrat);
+
+    --color-status-success: var(--status-success);
+    --color-status-warning: var(--status-warning);
+    --color-status-danger: var(--status-danger);
+
+    --color-admin-surface: var(--admin-surface);
+    --color-admin-border: var(--admin-border);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ========================================
+    Base
+======================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    background-color: var(--background-main);
+    color: var(--text-primary);
+    font-family:
+      var(--font-montserrat),
+      Arial,
+      Helvetica,
+      sans-serif;
+}
+
+/* ========================================
+    Common components
+======================================== */
+
+@layer components {
+    /*
+    * Contenedor principal de las páginas.
+    */
+    .app-container {
+        @apply mx-auto w-full max-w-[1440px] px-6 md:px-10 lg:px-14;
+    }
+
+    /*
+    * Separación vertical estándar entre secciones.
+    */
+    .section-spacing {
+        @apply py-12 md:py-16 lg:py-20;
+    }
+
+    .section-title {
+        @apply text-center
+            text-4xl
+            font-extrabold
+            text-brand-gold
+            md:text-5xl
+            lg:text-6xl;
+    }
+
+    .section-subtitle {
+        @apply mx-auto
+            mt-6
+            max-w-4xl
+            text-center
+            text-base
+            font-semibold
+            text-brand-black
+            md:text-lg;
+    }
+
+    /*
+    * Botón dorado principal.
+    */
+    .btn-primary {
+        @apply inline-flex
+            min-h-12
+            items-center
+            justify-center
+            rounded-2xl
+            bg-brand-gold
+            px-8
+            py-3
+            font-bold
+            text-white
+            transition
+            duration-200
+            hover:brightness-95
+            focus:outline-none
+            focus:ring-2
+            focus:ring-brand-gold
+            focus:ring-offset-2
+            disabled:cursor-not-allowed
+            disabled:opacity-50;
+    }
+
+    /*
+    * Botones de navegación
+    */
+    .btn-navigation {
+        @apply inline-flex
+            min-h-14
+            min-w-48
+            items-center
+            justify-center
+            rounded-2xl
+            bg-brand-gold
+            px-10
+            py-4
+            text-lg
+            font-bold
+            text-white
+            transition
+            duration-200
+            hover:brightness-95;
+    }
+
+    /*
+    * Tarjetas oscuras
+    */
+    .card-dark {
+        @apply rounded-2xl
+            bg-brand-dark
+            text-white
+            shadow-md;
+    }
+
+    /*
+    * Inputs y selects generales.
+    */
+    .input-base {
+        @apply w-full
+            rounded-xl
+            border
+            border-gray-300
+            bg-white
+            px-4
+            py-3
+            text-brand-black
+            outline-none
+            transition
+            focus:border-brand-gold
+            focus:ring-2
+            focus:ring-brand-gold/30;
+    }
+
+    /*
+    * Navegación superior.
+    */
+    .nav-link {
+        @apply font-semibold
+            text-white
+            transition
+            hover:text-brand-gold;
+    }
+
+    /*
+    * Indicador de disponibilidad.
+    */
+    .status-available {
+        @apply inline-flex
+            items-center
+            gap-2
+            font-semibold
+            text-white;
+    }
+
+    .status-dot {
+        @apply h-6
+            w-6
+            rounded-full
+            bg-brand-success;
+    }
+
+    /*
+    * Footer común.
+    */
+    .footer-base {
+        @apply bg-brand-footer
+            px-6
+            py-6
+            text-brand-black;
+    }
 }
