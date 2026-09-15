@@ -1,4 +1,7 @@
-// web/src/components/home/HeroSection.tsx
+/* ================================================
+    web/src/components/home/HeroSection.tsx
+    Diseño del panel de inicio
+================================================ */
 import Image from "next/image";
 
 export default function HeroSection() {

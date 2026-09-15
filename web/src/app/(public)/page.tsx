@@ -1,5 +1,5 @@
-// web/src/app/(public)/page.tsx
 /* ===========================================
+    web/src/app/(public)/page.tsx    
     Página principal pública
 =========================================== */
 import Footer from "@/src/components/layout/PublicFooter";

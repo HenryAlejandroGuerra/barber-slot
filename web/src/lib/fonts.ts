@@ -1,4 +1,7 @@
-// web/src/lib/fonts.ts
+/* ================================================
+    web/src/lib/fonts.ts
+    Fuente global de la aplicación
+================================================ */
 import { Montserrat } from "next/font/google";
 
 export const montserrat = Montserrat({

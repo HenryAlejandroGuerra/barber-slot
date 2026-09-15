@@ -1,4 +1,4 @@
 /* =====================================================
-    web/src/components/admin/AdminFooter.tsx
-    Diseño del Footer de la vista Administrativa
+    web/src/components/servicios/ServiciosCard.tsx
+    Diseño de la vista de Servicios
 ===================================================== */

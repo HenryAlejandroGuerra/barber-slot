@@ -1,4 +1,7 @@
-// web/src/components/layout/PublicFooter.tsx
+/* ================================================
+    web/src/components/layout/PublicFooter.tsx
+    Diseño del Footer Público
+================================================ */
 import Image from "next/image";
 import Link from "next/link";
 
@@ -30,18 +33,14 @@ export default function Footer() {
 
                 <div className="flex items-center gap-3">
                     {socialLinks.map((social) => (
-                        <Link
-                        key={social.name}
-                        href={social.href}
-                        aria-label={social.name}
-                        className="transition hover:scale-105"
-                        >
-                        <Image
-                            src={social.icon}
-                            alt={social.name}
-                            width={48}
-                            height={48}
-                        />
+                        <Link key={social.name}
+                                href={social.href}
+                                aria-label={social.name}
+                                className="transition hover:scale-105" >
+                            <Image src={social.icon}
+                                    alt={social.name}
+                                    width={48}
+                                    height={48} />
                         </Link>
                     ))}
                 </div>

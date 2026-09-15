@@ -1,4 +1,7 @@
-// web/src/components/ui/PrincipleCard.tsx
+/* ================================================
+    web/src/components/ui/PrincipleCard.tsx
+    Diseño del panel de Inicio
+================================================ */
 interface PrincipleCardProps {
     title: string;
     description: string;

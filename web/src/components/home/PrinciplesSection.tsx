@@ -1,4 +1,7 @@
-// web/src/components/home/PrinciplesSection.tsx
+/* =====================================================
+    web/src/components/home/PrinciplesSection.tsx
+    Diseño de la sección inicial
+===================================================== */
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import PrincipleCard from "@/src/components/ui/PrincipleCard";
 

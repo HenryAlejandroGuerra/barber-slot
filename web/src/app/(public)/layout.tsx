@@ -1,5 +1,5 @@
-// web/src/app/(public)/layout.tsx
 /* ===========================================
+    web/src/app/(public)/layout.tsx
     Diseño de la página principal pública
 =========================================== */
 import type { Metadata } from "next";

@@ -1,4 +1,4 @@
 /* =====================================================
-    web/src/components/admin/AdminFooter.tsx
-    Diseño del Footer de la vista Administrativa
+    web/src/components/reservas/ReservasConfirmacion.tsx
+    Diseño de la confirmación de Reserva
 ===================================================== */

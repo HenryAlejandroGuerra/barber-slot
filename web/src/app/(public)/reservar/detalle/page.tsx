@@ -1,4 +1,4 @@
 /* =====================================================
-    web/src/components/admin/AdminFooter.tsx
-    Diseño del Footer de la vista Administrativa
+    web/src/app/(public)/reservar/detalle/page.tsx    
+    Página para visualizar el detalle de la reserva
 ===================================================== */

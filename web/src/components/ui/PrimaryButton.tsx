@@ -1,4 +1,7 @@
-// web/src/components/ui/PrimaryButton.tsx
+/* ================================================
+    web/src/components/ui/PrimaryButton.tsx
+    Diseño del Botón Primario
+================================================ */
 import Link from "next/link";
 
 interface PrimaryButtonProps {
