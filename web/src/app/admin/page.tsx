@@ -1,4 +1,4 @@
-// web/src/app/admin/page.tsx
 /* ===========================================
-    Página Admin - Principal
+    web/src/app/admin/page.tsx    
+    Página principal de Administrador
 =========================================== */
