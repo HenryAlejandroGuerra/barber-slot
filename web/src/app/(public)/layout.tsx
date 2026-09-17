@@ -3,7 +3,7 @@
     Diseño de la página principal pública
 =========================================== */
 import type { Metadata } from "next";
-import { montserrat } from "@/src/lib/fonts";
+import { montserrat } from "@/lib/fonts";
 import "../globals.css";
 
 export const metadata: Metadata = {

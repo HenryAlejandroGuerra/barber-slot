@@ -2,8 +2,8 @@
     web/src/components/home/PrinciplesSection.tsx
     Diseño de la sección inicial
 ===================================================== */
-import PrimaryButton from "@/src/components/ui/PrimaryButton";
-import PrincipleCard from "@/src/components/ui/PrincipleCard";
+import PrimaryButton from "@/components/ui/PrimaryButton";
+import PrincipleCard from "@/components/ui/PrincipleCard";
 
 const principles = [
     {

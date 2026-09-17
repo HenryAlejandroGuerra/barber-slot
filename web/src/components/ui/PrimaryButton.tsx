@@ -8,14 +8,17 @@ interface PrimaryButtonProps {
     children: React.ReactNode;
     href?: string;
     className?: string;
+    variant?: "primary" | "navigation";
 }
 
 export default function PrimaryButton({
     children,
     href,
     className = "",
+    variant = "primary",
 }: PrimaryButtonProps) {
-    const classes = `btn-primary ${className}`;
+    const baseClass = variant === "navigation" ? "btn-navigation" : "btn-primary";
+    const classes = `${baseClass} ${className}`;
 
     if (href) {
         return (

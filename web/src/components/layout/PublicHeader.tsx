@@ -5,26 +5,45 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import PrimaryButton from "@/src/components/ui/PrimaryButton";
+import PrimaryButton from "@/components/ui/PrimaryButton";
+
+interface HeaderProps {
+    /**
+     * "full": logo con isotipo + wordmark (portada / inicio).
+     * "compact": solo isotipo, usado en las pantallas del flujo de reserva.
+     */
+    variant?: "full" | "compact";
+}
 
 const navigation = [
-    { label: "Inicio", href: "/" },
     { label: "Barberos", href: "/barberos" },
     { label: "Servicios", href: "/servicios" },
-    { label: "Horarios", href: "/horarios" },
+    { label: "Horario", href: "/horarios" },
+    { label: "Datos", href: "/reservar/detalle" },
+    { label: "Confirmación", href: "/reservar/confirmacion" },
 ];
 
-export default function Header() {
+export default function Header({ variant = "full" }: HeaderProps) {
     return (
         <header className="bg-brand-black">
             <div className="app-container flex min-h-28 items-center justify-between gap-8">
                 {/* Logo */}
                 <Link href="/" aria-label="Ir al inicio">
-                <Image src="/images/brand/logo.svg"
-                        alt="BarberSlot"
-                        width={72}
-                        height={72}
-                        priority />
+                    {variant === "full" ? (
+                        <Image src="/images/brand/logo.svg"
+                                alt="BarberSlot"
+                                width={220}
+                                height={62}
+                                className="h-12 w-auto md:h-14"
+                                priority />
+                    ) : (
+                        <Image src="/images/brand/logo.png"
+                                alt="BarberSlot"
+                                width={64}
+                                height={64}
+                                className="h-12 w-12 md:h-14 md:w-14"
+                                priority />
+                    )}
                 </Link>
 
                 {/* Navegación principal */}
