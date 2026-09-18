@@ -4,17 +4,9 @@
 ================================================ */
 import Link from "next/link";
 
-interface PrimaryButtonProps {
-    children: React.ReactNode;
-    href?: string;
-    className?: string;
-}
+interface PrimaryButtonProps {children: React.ReactNode; href?: string; className?: string;}
 
-export default function PrimaryButton({
-    children,
-    href,
-    className = "",
-}: PrimaryButtonProps) {
+export default function PrimaryButton({children, href, className = ""}: PrimaryButtonProps) {
     const classes = `btn-primary ${className}`;
 
     if (href) {

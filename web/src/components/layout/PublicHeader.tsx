@@ -5,13 +5,13 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import PrimaryButton from "@/src/components/ui/PrimaryButton";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 
 const navigation = [
     { label: "Inicio", href: "/" },
     { label: "Barberos", href: "/barberos" },
     { label: "Servicios", href: "/servicios" },
-    { label: "Horarios", href: "/horarios" },
+    { label: "Horarios", href: "/horarios" }
 ];
 
 export default function Header() {
