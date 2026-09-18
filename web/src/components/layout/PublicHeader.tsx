@@ -5,7 +5,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import PrimaryButton from "@/src/components/ui/PrimaryButton";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 
 const navigation = [
     { label: "Inicio", href: "/" },

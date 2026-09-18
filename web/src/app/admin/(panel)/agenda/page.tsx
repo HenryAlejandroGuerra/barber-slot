@@ -1,4 +1,3 @@
-// web/src/app/admin/(panel)/agenda/page.tsx
-/* ===========================================
-    Página Admin - Agenda
-=========================================== */
+export default function AgendaPage() {
+    return <main><h1>Agenda</h1></main>;
+}

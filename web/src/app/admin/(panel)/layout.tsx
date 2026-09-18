@@ -1,1 +1,5 @@
-// web/src/app/admin/(panel)/layout.tsx
+export default function AdminPanelLayout({
+    children,
+}: Readonly<{ children: React.ReactNode }>) {
+    return <>{children}</>;
+}

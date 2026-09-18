@@ -1,4 +1,3 @@
-/* ================================================
-    web/src/app/(public)/servicios/page.tsx    
-    Página para visualizar servicios disponibles
-================================================ */
+export default function ServiciosPage() {
+    return <main><h1>Servicios</h1></main>;
+}

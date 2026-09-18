@@ -1,4 +1,3 @@
-/* ================================================
-    web/src/app/(public)/horarios/page.tsx    
-    Página para visualizar horarios disponibles
-================================================ */
+export default function HorariosPage() {
+    return <main><h1>Horarios</h1></main>;
+}
