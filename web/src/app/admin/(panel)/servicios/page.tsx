@@ -1,4 +1,3 @@
-// web/src/app/admin/(panel)/servicios/page.tsx
-/* ===========================================
-    Página Admin - Servicios
-=========================================== */
+export default function AdminServiciosPage() {
+    return <main><h1>Servicios</h1></main>;
+}
