@@ -1,5 +1,3 @@
-import Footer from "@/components/layout/PublicFooter";
-import Header from "@/components/layout/PublicHeader";
 import ReservasForm from "@/components/reservas/ReservasForm";
 
 /*
