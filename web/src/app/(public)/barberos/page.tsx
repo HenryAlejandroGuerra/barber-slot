@@ -1,4 +1,3 @@
-/* ================================================
-    web/src/app/(public)/barberos/page.tsx    
-    Página para visualizar barberos disponibles
-================================================ */
+export default function BarberosPage() {
+    return <main><h1>Barberos</h1></main>;
+}
