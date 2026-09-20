@@ -11,7 +11,7 @@ const navigation = [
     { label: "Inicio", href: "/" },
     { label: "Barberos", href: "/barberos" },
     { label: "Servicios", href: "/servicios" },
-    { label: "Horarios", href: "/horarios" },
+    { label: "Horarios", href: "/horarios" }
 ];
 
 export default function Header() {
