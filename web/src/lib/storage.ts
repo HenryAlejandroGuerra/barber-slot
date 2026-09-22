@@ -7,10 +7,8 @@ export const STORAGE_KEYS = {
     barberos: "barberslot:barberos",
     servicios: "barberslot:servicios",
     citas: "barberslot:citas",
-
     sesion: "barberslot:sesion",
-
-    version: "barberslot:version",
+    version: "barberslot:version"
 } as const;
 
 export function readStorage<T>(key: string, fallback: T): T {

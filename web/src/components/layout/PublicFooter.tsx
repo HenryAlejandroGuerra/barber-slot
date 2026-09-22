@@ -9,18 +9,18 @@ const socialLinks = [
     {
         name: "Facebook",
         href: "#",
-        icon: "/images/social/facebook.svg",
+        icon: "/images/social/facebook.svg"
     },
     {
         name: "WhatsApp",
         href: "#",
-        icon: "/images/social/whatsapp.svg",
+        icon: "/images/social/whatsapp.svg"
     },
     {
         name: "Instagram",
         href: "#",
-        icon: "/images/social/instagram.svg",
-    },
+        icon: "/images/social/instagram.svg"
+    }
 ];
 
 export default function Footer() {

@@ -2,25 +2,17 @@
     web/src/app/(public)/layout.tsx
     Diseño de la página principal pública
 =========================================== */
-import type { Metadata } from "next";
-import { montserrat } from "@/lib/fonts";
-import "../globals.css";
+import PublicFooter from "@/components/layout/PublicFooter";
+import PublicHeader from "@/components/layout/PublicHeader";
 
-export const metadata: Metadata = {
-    title: "BarberSlot",
-    description: "Sistema de reserva de citas para Barbería Estilo Clásico",
-};
-
-export default function RootLayout({
-    children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
+export default function PublicLayout({children}: {children: React.ReactNode;}) {
     return (
-        <html lang="es">
-            <body className={montserrat.variable}>
+        <div className="flex min-h-screen flex-col bg-white text-brand-black">
+            <PublicHeader />
+            <main className="flex-1">
                 {children}
-            </body>
-        </html>
+            </main>
+            <PublicFooter />
+        </div>
     );
 }

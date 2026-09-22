@@ -16,9 +16,10 @@ interface HeaderProps {
 }
 
 const navigation = [
+    { label: "Inicio", href: "/" }, // enlace directo a la portada, ademas del logo
     { label: "Barberos", href: "/barberos" },
     { label: "Servicios", href: "/servicios" },
-    { label: "Horario", href: "/horarios" },
+    { label: "Horarios", href: "/horarios" },
     { label: "Datos", href: "/reservar/detalle" },
     { label: "Confirmación", href: "/reservar/confirmacion" },
 ];
