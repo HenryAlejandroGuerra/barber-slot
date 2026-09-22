@@ -9,7 +9,7 @@ import type { Cita } from "@/types/cita";
 import {readStorage, writeStorage, removeStorage, STORAGE_KEYS} from "@/lib/storage";
 import {obtenerFechaLocalISO} from "@/lib/fechas";
 
-const VERSION_MOCK = "1";
+const VERSION_MOCK = "3";
 
 export function initializeMockData(): void {
     const versionActual = readStorage<string | null>(STORAGE_KEYS.version,null);
@@ -53,7 +53,8 @@ export function initializeMockData(): void {
             nombre: "Henry Martinez",
             especialidad: "Corte y barba",
             activo: true,
-            disponible: true
+            disponible: true,
+            imagenUrl: "/images/barberos/henry.png"
         },
         {
             id: "barbero-2",
@@ -61,6 +62,7 @@ export function initializeMockData(): void {
             especialidad: "Corte",
             activo: true,
             disponible: true,
+            imagenUrl: "/images/barberos/francisco.png"
         },
         {
             id: "barbero-3",
@@ -68,6 +70,7 @@ export function initializeMockData(): void {
             especialidad: "Barba",
             activo: true,
             disponible: true,
+            imagenUrl: "/images/barberos/christopher.png"
         },
         {
             id: "barbero-4",
