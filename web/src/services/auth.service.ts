@@ -2,43 +2,48 @@
     web/src/services/auth.service.ts
     Servicio de autenticación
 ================================================ */
-import type {Usuario, SesionUsuario} from "@/types/auth";
-import {readStorage, writeStorage, removeStorage, STORAGE_KEYS} from "@/lib/storage";
+import type { Usuario, SesionUsuario } from "@/types/auth";
+import { apiFetch } from "@/lib/apiFetch";
 
 async function iniciarSesion(correo: string, contra: string): Promise<SesionUsuario> {
-    const usuarios = readStorage<Usuario[]>(STORAGE_KEYS.usuarios,[]);
-    const correoNormalizado = correo.trim().toLowerCase();
-    const usuario = usuarios.find(
-            (item) =>
-                item.correo.toLowerCase() === correoNormalizado && item.contra === contra && item.activo
-        );
-
-    if (!usuario) {
-        throw new Error(
-            "Correo o contraseña incorrectos"
-        );
-    }
-
-    const sesion: SesionUsuario = {
-        idUsuario: usuario.id,
-        nombre: usuario.nombre,
-        correo: usuario.correo,
-        rol: usuario.rol,
-        idBarbero: usuario.idBarbero,
-    };
-
-    writeStorage(STORAGE_KEYS.sesion, sesion);
-
-    return sesion;
+    return apiFetch<SesionUsuario>("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ correo, contra }),
+    });
 }
 
-
 async function obtenerSesionActual(): Promise<SesionUsuario | null> {
-    return readStorage<SesionUsuario | null>(STORAGE_KEYS.sesion, null);
+    return apiFetch<SesionUsuario | null>("/api/auth/sesion");
 }
 
 async function cerrarSesion(): Promise<void> {
-    removeStorage(STORAGE_KEYS.sesion);
+    await apiFetch("/api/auth/logout", { method: "POST" });
 }
 
-export const authService = {iniciarSesion, obtenerSesionActual, cerrarSesion};
+async function registrarUsuario(datos: {
+    nombre: string;
+    correo: string;
+    contra: string;
+    rol: Usuario["rol"];
+    idBarbero?: string;
+}): Promise<void> {
+    await apiFetch("/api/auth/registro", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            nombre: datos.nombre,
+            correo: datos.correo,
+            contra: datos.contra,
+            rol: datos.rol,
+            barberoId: datos.idBarbero,
+        }),
+    });
+}
+
+export const authService = {
+    iniciarSesion,
+    obtenerSesionActual,
+    cerrarSesion,
+    registrarUsuario,
+};

@@ -2,11 +2,11 @@
     web/src/services/barbero.service.ts
     Servicio de Barbero
 ================================================ */
-import type {Barbero} from "@/types/barbero";
-import {readStorage, STORAGE_KEYS} from "@/lib/storage";
+import type { Barbero } from "@/types/barbero";
+import { apiFetch } from "@/lib/apiFetch";
 
 async function obtenerTodos(): Promise<Barbero[]> {
-    return readStorage<Barbero[]>(STORAGE_KEYS.barberos, []);
+    return apiFetch<Barbero[]>("/api/barberos");
 }
 
 async function obtenerDisponibles(): Promise<Barbero[]> {

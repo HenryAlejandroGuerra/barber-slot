@@ -1,104 +1,28 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 import { obtenerFechaLocalISO } from "@/lib/fechas";
-import { readStorage, writeStorage, STORAGE_KEYS } from "@/lib/storage";
-import type { Cita } from "@/types/cita";
+import { barberoService } from "@/services/barbero.service";
+import { servicioService } from "@/services/servicio.service";
+import { citaService, ErrorHorarioNoDisponible } from "@/services/cita.service";
+import type { Barbero } from "@/types/barbero";
+import type { Servicio } from "@/types/servicio";
 
 // El tipo restringe el índice del wizard a las cuatro etapas disponibles.
 type Paso = 1 | 2 | 3 | 4;
 
-type BarberoOption = {
-    id: string;
-    nombre: string;
-    especialidad: string;
-    iniciales: string;
-    imagenUrl?: string;
-};
-
-type ServicioOption = {
-    id: string;
-    nombre: string;
-    descripcion: string;
-    precio: number;
-    duracionMinutos: number;
-};
-
-// Estas opciones se mantienen locales mientras el catálogo no provenga de una API.
-// Las rutas de imagen son públicas y se resuelven desde la carpeta web/public.
-const barberos: BarberoOption[] = [
-    {
-        id: "barbero-1",
-        nombre: "Pablo Neruda",
-        especialidad: "Cortes clásicos y modernos",
-        iniciales: "PN",
-        imagenUrl: "/images/barberos/pablo-neruda.jpg",
-    },
-    {
-        id: "barbero-2",
-        nombre: "Nelson Portillo",
-        especialidad: "Barba y perfilado",
-        iniciales: "NP",
-        imagenUrl: "/images/barberos/nelson-portillo.jpg",
-    },
-    {
-        id: "barbero-3",
-        nombre: "Juan Melendez",
-        especialidad: "Estilo y precisión",
-        iniciales: "JM",
-        imagenUrl: "/images/barberos/juan-melendez.jpg",
-    },
-    {
-        id: "primero-disponible",
-        nombre: "El primero disponible",
-        especialidad: "Te asignaremos el barbero más próximo",
-        iniciales: "ED",
-        imagenUrl: "/images/barberos/primero-disponible.jpg",
-    },
-];
-
-const servicios: ServicioOption[] = [
-    {
-        id: "corte-normal",
-        nombre: "Corte normal",
-        descripcion: "Corte clásico para renovar tu estilo.",
-        precio: 5,
-        duracionMinutos: 30,
-    },
-    {
-        id: "barba",
-        nombre: "Barba",
-        descripcion: "Perfilado y arreglo de barba.",
-        precio: 3,
-        duracionMinutos: 20,
-    },
-    {
-        id: "linea",
-        nombre: "Línea",
-        descripcion: "Definición de líneas y contornos.",
-        precio: 1,
-        duracionMinutos: 15,
-    },
-];
-
-// Los horarios representan los bloques que se pueden reservar durante la jornada.
-const horarios = [
-    "09:00",
-    "09:30",
-    "10:00",
-    "10:30",
-    "11:00",
-    "11:30",
-    "14:00",
-    "14:30",
-    "15:00",
-    "15:30",
-    "16:00",
-    "16:30",
-];
+// Iniciales para el marcador de posición cuando un barbero no tiene foto.
+function calcularIniciales(nombre: string): string {
+    return nombre
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((palabra) => palabra[0]?.toUpperCase() ?? "")
+        .join("");
+}
 
 // Se agrega la hora del mediodía para evitar cambios de fecha por la zona horaria.
 function formatearFecha(fecha: string) {
@@ -128,15 +52,63 @@ export default function ReservasForm() {
     const [telefono, setTelefono] = useState("");
     const [error, setError] = useState("");
     const [confirmada, setConfirmada] = useState(false);
+    const [enviando, setEnviando] = useState(false);
+
+    // El catálogo ahora viene de la API en vez de estar hardcodeado.
+    const [barberos, setBarberos] = useState<Barbero[]>([]);
+    const [servicios, setServicios] = useState<Servicio[]>([]);
+    const [cargandoCatalogo, setCargandoCatalogo] = useState(true);
+
+    useEffect(() => {
+        async function cargarCatalogo() {
+            const [barberosDisponibles, serviciosActivos] = await Promise.all([
+                barberoService.obtenerDisponibles(),
+                servicioService.obtenerActivos(),
+            ]);
+
+            setBarberos(barberosDisponibles);
+            setServicios(serviciosActivos);
+            setCargandoCatalogo(false);
+        }
+
+        cargarCatalogo();
+    }, []);
+
+    // Los horarios disponibles dependen del barbero, el servicio y la fecha
+    // elegidos, así que se recalculan contra la API cada vez que cambian.
+    const [horariosDisponibles, setHorariosDisponibles] = useState<string[]>([]);
+    const [cargandoHorarios, setCargandoHorarios] = useState(false);
+
+    useEffect(() => {
+        if (!barberoId || !servicioId || !fecha) {
+            return;
+        }
+
+        let cancelado = false;
+        setCargandoHorarios(true);
+
+        citaService
+            .obtenerDisponibilidad(barberoId, servicioId, fecha)
+            .then((horarios) => {
+                if (!cancelado) setHorariosDisponibles(horarios);
+            })
+            .finally(() => {
+                if (!cancelado) setCargandoHorarios(false);
+            });
+
+        return () => {
+            cancelado = true;
+        };
+    }, [barberoId, servicioId, fecha]);
 
     // Se recalculan únicamente cuando cambia el identificador seleccionado.
     const barberoSeleccionado = useMemo(
         () => barberos.find((barbero) => barbero.id === barberoId),
-        [barberoId],
+        [barberos, barberoId],
     );
     const servicioSeleccionado = useMemo(
         () => servicios.find((servicio) => servicio.id === servicioId),
-        [servicioId],
+        [servicios, servicioId],
     );
 
     function siguientePaso() {
@@ -168,7 +140,7 @@ export default function ReservasForm() {
         setPaso((pasoActual) => Math.max(1, pasoActual - 1) as Paso);
     }
 
-    function confirmarReserva(event: FormEvent<HTMLFormElement>) {
+    async function confirmarReserva(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
         // La reserva no se guarda si falta información seleccionada en pasos anteriores.
@@ -177,22 +149,34 @@ export default function ReservasForm() {
             return;
         }
 
-        const citasActuales = readStorage<Cita[]>(STORAGE_KEYS.citas, []);
-        // La estructura coincide con el tipo Cita utilizado por el resto de la aplicación.
-        const nuevaCita: Cita = {
-            id: `cita-${Date.now()}`,
-            nombreCliente: nombre,
-            idBarbero: barberoSeleccionado.id,
-            idServicio: servicioSeleccionado.id,
-            fecha,
-            hora,
-            estado: "pendiente",
-            fechaCreacion: new Date().toISOString(),
-        };
+        setError("");
+        setEnviando(true);
 
-        // El almacenamiento local permite conservar las citas mientras se completa el backend.
-        writeStorage(STORAGE_KEYS.citas, [...citasActuales, nuevaCita]);
-        setConfirmada(true);
+        try {
+            await citaService.crear({
+                nombreCliente: nombre,
+                correoCliente: correo,
+                telefonoCliente: telefono,
+                idBarbero: barberoSeleccionado.id,
+                idServicio: servicioSeleccionado.id,
+                fecha,
+                hora,
+            });
+
+            setConfirmada(true);
+        } catch (error) {
+            if (error instanceof ErrorHorarioNoDisponible) {
+                // Otra persona reservó ese horario primero: se refresca la
+                // lista y se regresa al paso de fecha/hora para elegir otro.
+                setHorariosDisponibles(error.horarios);
+                setHora("");
+                setPaso(3);
+            }
+
+            setError(error instanceof Error ? error.message : "No se pudo confirmar la reserva.");
+        } finally {
+            setEnviando(false);
+        }
     }
 
     if (confirmada) {
@@ -265,7 +249,11 @@ export default function ReservasForm() {
                 <div className="rounded-3xl bg-white p-5 shadow-xl md:p-10">
                     {/* El contenido cambia según el paso actual, sin perder las selecciones anteriores. */}
                     {/* Paso 1: las imágenes conservan una proporción común para evitar tarjetas irregulares. */}
-                    {paso === 1 && (
+                    {paso === 1 && cargandoCatalogo && (
+                        <p className="py-16 text-center text-lg font-semibold">Cargando barberos...</p>
+                    )}
+
+                    {paso === 1 && !cargandoCatalogo && (
                         <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
                             {barberos.map((barbero) => (
                                 <button
@@ -288,7 +276,7 @@ export default function ReservasForm() {
                                         />
                                     ) : (
                                         <span className="flex aspect-[4/3] w-full items-center justify-center bg-brand-dark text-3xl font-extrabold text-brand-gold">
-                                            {barbero.iniciales}
+                                            {calcularIniciales(barbero.nombre)}
                                         </span>
                                     )}
                                     <span className="flex flex-1 flex-col p-5">
@@ -305,7 +293,11 @@ export default function ReservasForm() {
                     )}
 
                     {/* Paso 2: cada servicio muestra precio, descripción y duración estimada. */}
-                    {paso === 2 && (
+                    {paso === 2 && cargandoCatalogo && (
+                        <p className="py-16 text-center text-lg font-semibold">Cargando servicios...</p>
+                    )}
+
+                    {paso === 2 && !cargandoCatalogo && (
                         <div className="grid gap-5 md:grid-cols-3">
                             {servicios.map((servicio) => (
                                 <button
@@ -354,9 +346,18 @@ export default function ReservasForm() {
                                 <legend className="mb-3 font-bold text-brand-black">
                                     Hora disponible
                                 </legend>
+                                {!fecha && (
+                                    <p className="text-sm text-brand-gray">Elige primero una fecha.</p>
+                                )}
+                                {fecha && cargandoHorarios && (
+                                    <p className="text-sm text-brand-gray">Buscando horarios disponibles...</p>
+                                )}
+                                {fecha && !cargandoHorarios && horariosDisponibles.length === 0 && (
+                                    <p className="text-sm text-brand-gray">No hay horarios disponibles ese día.</p>
+                                )}
                                 {/* Las horas se muestran como botones para facilitar la selección en móvil. */}
                                 <div className="grid grid-cols-3 gap-3">
-                                    {horarios.map((horario) => (
+                                    {fecha && horariosDisponibles.map((horario) => (
                                         <button
                                             key={horario}
                                             type="button"
@@ -480,8 +481,13 @@ export default function ReservasForm() {
                         ) : (
                             <>
                                 {/* El botón se vincula al formulario mediante su id porque se renderiza fuera del form. */}
-                                <button type="submit" form="reserva-form" className="btn-navigation">
-                                    Confirmar reserva
+                                <button
+                                    type="submit"
+                                    form="reserva-form"
+                                    disabled={enviando}
+                                    className="btn-navigation disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    {enviando ? "Enviando..." : "Confirmar reserva"}
                                 </button>
                             </>
                         )}

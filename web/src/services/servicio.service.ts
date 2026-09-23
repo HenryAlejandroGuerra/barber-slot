@@ -3,10 +3,10 @@
     Servicio de Servicios de Peluquería
 ================================================ */
 import type {Servicio} from "@/types/servicio";
-import {readStorage, writeStorage, STORAGE_KEYS} from "@/lib/storage";
+import { apiFetch } from "@/lib/apiFetch";
 
 async function obtenerTodos(): Promise<Servicio[]> {
-    return readStorage<Servicio[]>(STORAGE_KEYS.servicios, []);
+    return apiFetch<Servicio[]>("/api/servicios");
 }
 
 async function obtenerActivos(): Promise<Servicio[]> {
@@ -16,103 +16,52 @@ async function obtenerActivos(): Promise<Servicio[]> {
         (servicio) => servicio.activo
     );
 }
+
 async function crear(
     datos: Omit<Servicio, "id">
 ): Promise<Servicio> {
-
-    const servicios = await obtenerTodos();
-
-    const nuevoServicio: Servicio = {
-        id: crypto.randomUUID(),
-        nombre: datos.nombre.trim(),
-        descripcion: datos.descripcion.trim(),
-        precio: datos.precio,
-        duracionMinutos: datos.duracionMinutos,
-        activo: datos.activo
-    };
-
-    servicios.push(nuevoServicio);
-
-    writeStorage(
-        STORAGE_KEYS.servicios,
-        servicios
-    );
-
-    return nuevoServicio;
+    return apiFetch<Servicio>("/api/servicios", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos),
+    });
 }
-
 
 async function actualizar(
     idServicio: string,
     datos: Omit<Servicio, "id">
 ): Promise<Servicio> {
-
-    const servicios = await obtenerTodos();
-
-    const indice = servicios.findIndex(
-        (servicio) =>
-            servicio.id === idServicio
-    );
-
-    if (indice === -1) {
-        throw new Error(
-            "Servicio no encontrado."
-        );
-    }
-
-    const servicioActualizado: Servicio = {
-        id: idServicio,
-        nombre: datos.nombre.trim(),
-        descripcion: datos.descripcion.trim(),
-        precio: datos.precio,
-        duracionMinutos: datos.duracionMinutos,
-        activo: datos.activo
-    };
-
-    servicios[indice] =
-        servicioActualizado;
-
-    writeStorage(
-        STORAGE_KEYS.servicios,
-        servicios
-    );
-
-    return servicioActualizado;
+    return apiFetch<Servicio>(`/api/servicios/${idServicio}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos),
+    });
 }
-
 
 async function cambiarEstado(
     idServicio: string,
     activo: boolean
 ): Promise<Servicio> {
-
-    const servicios = await obtenerTodos();
-
-    const indice = servicios.findIndex(
-        (servicio) =>
-            servicio.id === idServicio
-    );
-
-    if (indice === -1) {
-        throw new Error(
-            "Servicio no encontrado."
-        );
+    // Desactivar usa el DELETE del backend (baja lógica). Reactivar reusa PUT,
+    // porque el backend solo expone POST/PUT/DELETE para /api/servicios.
+    if (!activo) {
+        return apiFetch<Servicio>(`/api/servicios/${idServicio}`, { method: "DELETE" });
     }
 
-    const servicioActualizado: Servicio = {
-        ...servicios[indice],
-        activo
-    };
+    const servicios = await obtenerTodos();
+    const actual = servicios.find((servicio) => servicio.id === idServicio);
 
-    servicios[indice] =
-        servicioActualizado;
+    if (!actual) {
+        throw new Error("Servicio no encontrado.");
+    }
 
-    writeStorage(
-        STORAGE_KEYS.servicios,
-        servicios
-    );
-
-    return servicioActualizado;
+    return actualizar(idServicio, {
+        nombre: actual.nombre,
+        descripcion: actual.descripcion,
+        precio: actual.precio,
+        duracionMinutos: actual.duracionMinutos,
+        activo: true,
+    });
 }
 
 export const servicioService = {obtenerTodos, obtenerActivos, crear, actualizar, cambiarEstado};

@@ -20,6 +20,10 @@ const navigation = [
     {
         label: "Servicios",
         href: "/admin/servicios"
+    },
+    {
+        label: "Usuarios",
+        href: "/admin/usuarios/nuevo"
     }
 ];
 
@@ -37,7 +41,9 @@ export default function AdminHeader() {
      * Administrador ve todas las opciones. Barbero no debe administrar servicios.
      */
     const navigationFiltrada = navigation.filter((item) => {
-        if (item.href === "/admin/servicios" && sesion?.rol !== "administrador") {
+        const soloAdministrador = item.href === "/admin/servicios" || item.href === "/admin/usuarios/nuevo";
+
+        if (soloAdministrador && sesion?.rol !== "administrador") {
             return false;
         }
         return true;

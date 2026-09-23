@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum RolUsuario {
+  administrador
+  barbero
+}
+
+enum EstadoCita {
+  pendiente
+  confirmada
+  cancelada
+}
+
+model Barbero {
+  id           String  @id @default(cuid())
+  nombre       String
+  especialidad String
+  activo       Boolean @default(true)
+  disponible   Boolean @default(true)
+  imagenUrl    String? @map("imagen_url")
+
+  citas    Cita[]
+  usuarios Usuario[]
+
+  @@map("barbero")
+}
+
+model Servicio {
+  id              String  @id @default(cuid())
+  nombre          String
+  descripcion     String
+  precio          Decimal @db.Decimal(10, 2)
+  duracionMinutos Int     @map("duracion_minutos")
+  activo          Boolean @default(true)
+
+  citas Cita[]
+
+  @@map("servicio")
+}
+
+model Cliente {
+  id       String @id @default(cuid())
+  nombre   String
+  correo   String
+  telefono String
+
+  citas Cita[]
+
+  @@map("cliente")
+}
+
+model Cita {
+  id String @id @default(cuid())
+
+  clienteId String  @map("cliente_id")
+  cliente   Cliente @relation(fields: [clienteId], references: [id])
+
+  barberoId String  @map("barbero_id")
+  barbero   Barbero @relation(fields: [barberoId], references: [id])
+
+  servicioId String   @map("servicio_id")
+  servicio   Servicio @relation(fields: [servicioId], references: [id])
+
+  fechaInicio DateTime   @map("fecha_inicio") @db.Timestamptz
+  fechaFin    DateTime   @map("fecha_fin") @db.Timestamptz
+  estado      EstadoCita @default(pendiente)
+
+  fechaCreacion DateTime @default(now()) @map("fecha_creacion") @db.Timestamptz
+
+  @@map("cita")
+}
+
+model Usuario {
+  id         String     @id @default(cuid())
+  nombre     String
+  correo     String     @unique
+  contraHash String     @map("contra_hash")
+  rol        RolUsuario
+  activo     Boolean    @default(true)
+
+  barberoId String?  @map("barbero_id")
+  barbero   Barbero? @relation(fields: [barberoId], references: [id])
+
+  @@map("usuario")
+}
