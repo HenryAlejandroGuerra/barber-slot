@@ -14,12 +14,14 @@ import type { Barbero } from "@/types/barbero";
 export default function BarberosPage() {
     const [barberos, setBarberos] = useState<Barbero[]>([]);
     const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState("");
 
     useEffect(() => {
-        barberoService.obtenerDisponibles().then((datos) => {
-            setBarberos(datos);
-            setCargando(false);
-        });
+        barberoService
+            .obtenerDisponibles()
+            .then(setBarberos)
+            .catch(() => setError("No se pudieron cargar los barberos. Intenta de nuevo más tarde."))
+            .finally(() => setCargando(false));
     }, []);
 
     return (
@@ -38,7 +40,11 @@ export default function BarberosPage() {
                     <p className="mt-14 text-center text-lg font-semibold">Cargando barberos...</p>
                 )}
 
-                {!cargando && barberos.length === 0 && (
+                {!cargando && error && (
+                    <p role="alert" className="mt-14 text-center text-lg font-semibold text-red-700">{error}</p>
+                )}
+
+                {!cargando && !error && barberos.length === 0 && (
                     <p className="mt-14 text-center text-lg font-semibold">No hay barberos disponibles por el momento.</p>
                 )}
 
