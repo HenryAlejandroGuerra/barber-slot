@@ -49,7 +49,15 @@ export async function POST(request: Request) {
         idBarbero: usuario.barberoId ?? undefined,
     };
 
-    await crearSesion(sesion);
+    try {
+        await crearSesion(sesion);
+    } catch (error) {
+        // Si falta SESSION_SECRET en el entorno, crearSesion lanza en vez de
+        // dejar la cookie a medias. Se responde con un error claro en vez de
+        // que el servidor termine en un 500 en blanco.
+        console.error("No se pudo crear la sesión:", error);
+        return NextResponse.json({ error: "El servidor no está configurado correctamente." }, { status: 500 });
+    }
 
     return NextResponse.json(sesion);
 }
