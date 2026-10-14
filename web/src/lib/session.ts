@@ -1,5 +1,5 @@
 /* ===========================================
-    web/src/lib/session.ts
+    backend/src/lib/session.ts
     Emisión y verificación de la cookie de sesión
 =========================================== */
 import { createHmac, timingSafeEqual } from "crypto";

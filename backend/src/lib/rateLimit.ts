@@ -1,5 +1,5 @@
 /* ===========================================
-    web/src/lib/rateLimit.ts
+    backend/src/lib/rateLimit.ts
     Límite de solicitudes por IP
 =========================================== */
 

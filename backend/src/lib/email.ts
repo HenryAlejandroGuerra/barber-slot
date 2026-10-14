@@ -1,5 +1,5 @@
 /* ===========================================
-    web/src/lib/email.ts
+    backend/src/lib/email.ts
     Correo de confirmación de citas (Resend)
 =========================================== */
 import { Resend } from "resend";

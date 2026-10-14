@@ -1,19 +1,20 @@
 /* ===========================================
-    web/src/lib/prisma.ts
+    backend/src/lib/prisma.ts
     Cliente único de Prisma
 =========================================== */
+import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
 
-const globalParaPrisma = globalThis as unknown as {
-    prisma?: PrismaClient;
-};
+const globalParaPrisma = globalThis as unknown as { prisma?: PrismaClient; };
+const connectionString = process.env.DATABASE_URL;
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+if (!connectionString) {
+    throw new Error("DATABASE_URL no está configurada.");
+}
 
-// En desarrollo, Next.js recarga los módulos en cada cambio y crearía un
-// PrismaClient nuevo por cada recarga, agotando las conexiones a la base.
-// Por eso lo guardamos en globalThis y lo reutilizamos.
+const adapter = new PrismaPg({ connectionString });
+
 export const prisma = globalParaPrisma.prisma ?? new PrismaClient({ adapter });
 
 if (process.env.NODE_ENV !== "production") {

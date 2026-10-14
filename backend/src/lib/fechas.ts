@@ -1,5 +1,5 @@
 /* ================================================
-    web/src/lib/fechas.ts
+    backend/src/lib/fechas.ts
     Utilidades para manejo de fechas
 ================================================ */
 export function obtenerFechaLocalISO(fecha: Date = new Date()): string {

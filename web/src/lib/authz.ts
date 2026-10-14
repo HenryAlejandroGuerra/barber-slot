@@ -1,5 +1,5 @@
 /* ===========================================
-    web/src/lib/authz.ts
+    backend/src/lib/authz.ts
     Verificación de sesión y rol para rutas de API
 =========================================== */
 import { NextResponse } from "next/server";

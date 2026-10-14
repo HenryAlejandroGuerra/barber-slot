@@ -1,5 +1,5 @@
 /* ===========================================
-    web/src/lib/horarios.ts
+    backend/src/lib/horarios.ts
     Bloques de horario que ofrece la barbería
 =========================================== */
 export const HORARIOS_DISPONIBLES = [

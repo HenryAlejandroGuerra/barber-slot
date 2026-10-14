@@ -1,5 +1,5 @@
 /* ===========================================
-    web/src/lib/disponibilidad.ts
+    backend/src/lib/disponibilidad.ts
     Cálculo de horarios libres para un barbero/servicio/fecha
 =========================================== */
 import { prisma } from "@/lib/prisma";
