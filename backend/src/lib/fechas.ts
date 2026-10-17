@@ -3,10 +3,19 @@
     Utilidades para manejo de fechas
 ================================================ */
 export function obtenerFechaLocalISO(fecha: Date = new Date()): string {
-    const anio = fecha.getFullYear();
-    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
-    const dia = String(fecha.getDate()).padStart(2, "0");
-    return `${anio}-${mes}-${dia}`;
+    const partes = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/El_Salvador",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    }).formatToParts(fecha);
+
+    const obtener = (tipo: Intl.DateTimeFormatPartTypes) =>
+        partes.find((parte) =>
+            parte.type === tipo
+        )?.value ?? "";
+
+    return `${obtener("year")}-${obtener("month")}-${obtener("day")}`;
 }
 
 // El Salvador no tiene horario de verano: el desfase respecto a UTC es

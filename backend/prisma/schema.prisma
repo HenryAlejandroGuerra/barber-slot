@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -19,6 +18,16 @@ enum EstadoCita {
   cancelada
 }
 
+enum DiaSemana {
+  lunes
+  martes
+  miercoles
+  jueves
+  viernes
+  sabado
+  domingo
+}
+
 model Barbero {
   id           String  @id @default(cuid())
   nombre       String
@@ -29,8 +38,26 @@ model Barbero {
 
   citas    Cita[]
   usuarios Usuario[]
+  horarios HorarioBarbero[]
 
   @@map("barbero")
+}
+
+model HorarioBarbero {
+  id String @id @default(cuid())
+
+  barberoId String  @map("barbero_id")
+  barbero   Barbero @relation(fields: [barberoId], references: [id], onDelete: Cascade)
+
+  diaSemana DiaSemana @map("dia_semana")
+
+  horaInicio DateTime @map("hora_inicio") @db.Time(0)
+  horaFin    DateTime @map("hora_fin") @db.Time(0)
+
+  activo Boolean @default(true)
+
+  @@unique([barberoId, diaSemana])
+  @@map("horario_barbero")
 }
 
 model Servicio {

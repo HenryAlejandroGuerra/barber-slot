@@ -4,7 +4,7 @@
 =========================================== */
 import { prisma } from "@/lib/prisma";
 import { combinarFechaHora } from "@/lib/fechas";
-import { HORARIOS_DISPONIBLES } from "@/lib/horarios";
+import { HORARIOS_DISPONIBLES_SEED } from "@/lib/horarios";
 
 export async function calcularDisponibilidad(
     barberoId: string,
@@ -26,7 +26,7 @@ export async function calcularDisponibilidad(
 
     const ahora = new Date();
 
-    return HORARIOS_DISPONIBLES.filter((hora) => {
+    return HORARIOS_DISPONIBLES_SEED.filter((hora) => {
         const inicioBloque = combinarFechaHora(fecha, hora);
         const finBloque = new Date(inicioBloque.getTime() + duracionMinutos * 60_000);
 
