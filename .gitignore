@@ -94,6 +94,7 @@ Thumbs.db
 # IDE / Editor
 # -------------------------
 .vscode/*
+mobile/.vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
-.idea/
+.idea/*
