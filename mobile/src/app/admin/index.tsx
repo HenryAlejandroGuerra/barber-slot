@@ -9,11 +9,7 @@ import { router } from "expo-router";
 import AdminScreen from "@/components/admin/AdminScreen";
 import BrandHeader from "@/components/layout/BrandHeader";
 import { COLORS, RADIUS } from "@/constants/theme";
-
-const ADMIN_MOCK = {
-    correo: "admin@barberslot.test",
-    contra: "Admin123!"
-};
+import { USUARIOS_MOCK } from "@/data/mock/usuarios.mock";
 
 export default function AdminLoginScreen() {
     const [correo, setCorreo] = useState("");
@@ -37,7 +33,13 @@ export default function AdminLoginScreen() {
             return;
         }
 
-        if (correo.trim().toLowerCase() !== ADMIN_MOCK.correo || contra !== ADMIN_MOCK.contra) {
+        const usuario = USUARIOS_MOCK.find((item) =>
+            item.correo.toLowerCase() === correo.trim().toLowerCase() &&
+            item.contra === contra &&
+            item.activo
+        );
+
+        if (!usuario) {
             setError("Correo o contraseña incorrectos.");
             return;
         }

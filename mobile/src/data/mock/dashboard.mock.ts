@@ -1,3 +1,7 @@
+/* ===============================================================
+    mobile/src/data/mock/dashboard.mock.ts
+    Datos simulados utilizados por el dashboard administrativo
+=============================================================== */
 export const dashboardMock = {
     resumen: {
         citasHoy: 12,
@@ -36,9 +40,21 @@ export const dashboardMock = {
         }
     ],
     barberosDisponibles: [
-        "Miguel Salguero",
-        "Andres Portillo",
-        "Luis Enrique",
-        "Carlos Mancia"
+        {
+            id: "1",
+            nombre: "Miguel Salguero"
+        },
+        {
+            id: "2",
+            nombre: "Andres Portillo"
+        },
+        {
+            id: "3",
+            nombre: "Luis Enrique"
+        },
+        {
+            id: "4",
+            nombre: "Carlos Mancia"
+        }
     ]
-};
+} as const;

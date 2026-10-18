@@ -1,7 +1,7 @@
-/* =====================================================
+/* =========================================================================
     mobile/src/components/admin/DashboardCard.tsx
     Tarjeta reutilizable para mostrar métricas del dashboard administrativo.
-===================================================== */
+========================================================================= */
 import { Image, ImageSourcePropType, StyleSheet, Text, View } from "react-native";
 import { COLORS, RADIUS } from "@/constants/theme";
 
