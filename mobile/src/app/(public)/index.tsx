@@ -2,91 +2,101 @@
     mobile/src/app/(public)/index.tsx
     Index de la parte pública
 ================================================ */
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { router } from "expo-router";
-import { COLORS } from "@/constants/theme";
+import { Image, StyleSheet, Text, View } from "react-native";
+import PublicScreen from "@/components/layout/PublicScreen";
+import PublicHeader from "@/components/layout/PublicHeader";
+import PublicFooter from "@/components/layout/PublicFooter";
+import PrimaryButton from "@/components/ui/PrimaryButton";
+import PrincipleCard from "@/components/ui/PrincipleCard";
+import { COLORS, RADIUS, SPACING } from "@/constants/theme";
+import { IMAGES } from "@/constants/images";
+
+const principles = [
+    {
+        title: "Profesionalismo",
+        description: "Cada personal en nuestra barbería está altamente capacitado para cada corte."
+    },
+    {
+        title: "Perfección",
+        description: "Porque no solo queda bien, sino queda perfecto."
+    },
+    {
+        title: "Buen precio",
+        description: "Porque verte bien no es caro."
+    }
+];
 
 export default function LandingScreen() {
     return (
-        <View style={styles.container}>
-            <Text style={styles.logo}>
-                Barber
-                <Text style={styles.logoGold}>
-                    Slot
+        <PublicScreen>
+            <PublicHeader />
+
+            <View style={styles.heroFrame}>
+                <Image source={IMAGES.home.hero} style={styles.hero} resizeMode="cover" />
+            </View>
+
+            <View style={styles.section}>
+                <Text style={styles.title}>Nuestros principios</Text>
+
+                <Text style={styles.subtitle}>
+                    Cada corte es hecho por profesionales altamente calificados y
+                    aptos para darte el cuidado que mereces.
                 </Text>
-            </Text>
 
-            <Text style={styles.title}>
-                BarberSlot Mobile
-            </Text>
+                <PrimaryButton href="/reservar" style={styles.cta}>
+                    Reservar cita
+                </PrimaryButton>
 
-            <Pressable style={styles.button} onPress={() => router.push("/reservar")} >
-                <Text style={styles.buttonText}>
-                    Reservar
-                </Text>
-            </Pressable>
+                <View style={styles.principles}>
+                    {principles.map((principle) => (
+                        <PrincipleCard key={principle.title} title={principle.title} description={principle.description} />
+                    ))}
+                </View>
+            </View>
 
-            <Text style={styles.adminQuestion}>
-                ¿Eres administrador?
-            </Text>
-
-            <Pressable onPress={() => router.push("/admin")}>
-                <Text style={styles.adminLink}>
-                    Iniciar Sesión
-                </Text>
-            </Pressable>
-        </View>
+            <PublicFooter />
+        </PublicScreen>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 24,
-        backgroundColor: COLORS.publicBackground
+    heroFrame: {
+        marginHorizontal: SPACING.lg,
+        marginTop: SPACING.lg,
+        aspectRatio: 4 / 3,
+        maxHeight: 390,
+        overflow: "hidden",
+        borderRadius: RADIUS.lg
     },
-    logo: {
-        fontFamily: "Montserrat_800ExtraBold",
-        fontSize: 40,
-        color: COLORS.black
+    hero: {
+        width: "100%",
+        height: "100%"
     },
-    logoGold: {
-        color: COLORS.gold
+    section: {
+        paddingHorizontal: SPACING.lg,
+        paddingVertical: SPACING.xl
     },
     title: {
-        marginTop: 24,
+        textAlign: "center",
+        fontFamily: "Montserrat_800ExtraBold",
+        fontSize: 28,
+        color: COLORS.gold
+    },
+    subtitle: {
+        marginTop: SPACING.md,
+        textAlign: "center",
         fontFamily: "Montserrat_600SemiBold",
-        fontSize: 20,
-        color: COLORS.textDark
-    },
-    button: {
-        marginTop: 40,
-        width: "100%",
-        paddingVertical: 16,
-        borderRadius: 999,
-        alignItems: "center",
-        backgroundColor: COLORS.gold
-    },
-    buttonText: {
-        fontFamily: "Montserrat_700Bold",
-        fontSize: 18,
+        fontSize: 15,
+        lineHeight: 22,
         color: COLORS.black
     },
-    adminAccess: {
-        marginTop: 60,
-        alignItems: "center"
+    cta: {
+        marginTop: SPACING.lg
     },
-    adminQuestion: {
-        fontFamily: "Montserrat_600SemiBold",
-        fontSize: 16,
-        color: COLORS.textSecondary
-    },
-    adminLink: {
-        marginTop: 10,
-        fontFamily: "Montserrat_500Medium",
-        fontSize: 14,
-        color: COLORS.gold
+    principles: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        gap: SPACING.md,
+        marginTop: SPACING.xl
     }
 });

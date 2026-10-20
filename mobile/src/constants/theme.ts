@@ -8,6 +8,9 @@ export const COLORS = {
 
     // Público
     publicBackground: "#FFFFFF",
+    footer: "#ECECEC",
+    // Igual al fondo opaco de logo-full.png para que no se note el recuadro.
+    publicHeader: "#101013",
     black: "#0D0D0D",
     white: "#FFFFFF",
 
