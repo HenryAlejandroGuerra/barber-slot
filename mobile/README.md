@@ -44,3 +44,13 @@ git clone <URL_DEL_REPOSITORIO>
 ```
 
 Usuarios de prueba tras el seed: `admin@barberslot.test` / `Admin123!` (administrador) y `henry@barberslot.test` / `Barber123!` (barbero).
+## Pantallas informativas
+
+La navegación pública incluye Inicio, Barberos, Servicios y Horarios.
+Servicios presenta precios, duraciones aproximadas y descripciones; Horarios utiliza el horario publicado en el pie de página: lunes a sábado, de 9:00 a. m. a 5:00 p. m.
+Ambas pantallas incluyen botones para volver al inicio y solicitar una reserva en `/reservar` (pantalla de reserva actualmente pendiente de implementación).
+
+### Imagen de Horarios
+
+Reemplaza `mobile/assets/images/horarios/barberia.png` por tu fotografía en formato PNG, conservando el nombre. Se incluye una copia de la imagen de inicio como imagen inicial. Se recomienda una foto horizontal en proporción 16:9; se recorta para llenar el espacio.
+Si prefieres otro nombre o formato, actualiza `IMAGES.horarios.barberia` en `mobile/src/constants/images.ts` y la descripción accesible en `mobile/src/app/(public)/horarios.tsx` para que coincida con la imagen.

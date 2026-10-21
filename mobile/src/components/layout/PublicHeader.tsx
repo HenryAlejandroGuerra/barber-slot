@@ -10,7 +10,9 @@ import { IMAGES } from "@/constants/images";
 
 const navigation = [
     { label: "Inicio", href: "/" as const },
-    { label: "Barberos", href: "/barberos" as const }
+    { label: "Barberos", href: "/barberos" as const },
+    { label: "Servicios", href: "/servicios" as const },
+    { label: "Horarios", href: "/horarios" as const }
 ];
 
 export default function PublicHeader() {
@@ -36,7 +38,7 @@ export default function PublicHeader() {
 
                     return (
                         <Link key={item.href} href={item.href} asChild>
-                            <Pressable style={styles.navItem}>
+                            <Pressable style={styles.navItem} accessibilityState={{ selected: activo }}>
                                 <Text style={[styles.navLink, activo && styles.navLinkActive]}>
                                     {item.label}
                                 </Text>
@@ -68,9 +70,12 @@ const styles = StyleSheet.create({
     },
     nav: {
         flexDirection: "row",
-        gap: SPACING.lg
+        flexWrap: "wrap",
+        columnGap: SPACING.md, rowGap: SPACING.sm
     },
     navItem: {
+        minHeight: 44,
+        justifyContent: "flex-end",
         paddingTop: SPACING.xs
     },
     navLink: {

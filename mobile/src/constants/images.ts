@@ -17,6 +17,9 @@ export const IMAGES = {
     home: {
         hero: require("../../assets/images/home/hero-barbershop.png")
     },
+    horarios: {
+        barberia: require("../../assets/images/horarios/barberia.png")
+    },
     social: {
         facebook: require("../../assets/images/social/facebook.png"),
         whatsapp: require("../../assets/images/social/whatsapp.png"),
