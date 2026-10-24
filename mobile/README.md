@@ -1,78 +1,268 @@
 # BarberSlot Mobile
 
-Aplicación móvil del proyecto **BarberSlot**, desarrollada con React Native y Expo como parte de la asignatura Diseño y Programación de Software Multiplataforma.
+Aplicación móvil de BarberSlot desarrollada con React Native y Expo.
 
-BarberSlot permite gestionar reservas de una barbería mediante una aplicación móvil con módulo público y módulo administrativo.
+Esta versión corresponde a la Etapa 3 del proyecto y adapta la experiencia de BarberSlot a dispositivos móviles, manteniendo la identidad visual utilizada en la versión web.
 
-El flujo público de reservas se conecta a la API REST de la aplicación web para consultar barberos, servicios y horarios, y registrar las citas.
-
----
+Actualmente la aplicación móvil utiliza datos mock, por lo que puede ejecutarse y demostrarse sin conexión al backend.
 
 ## Tecnologías utilizadas
 
 - React Native
 - Expo SDK 57
 - Expo Router
-- TypeScript
 - React
+- TypeScript
 - Expo Go
 - Montserrat
 - Git y GitHub
-
----
 
 ## Requisitos
 
 Antes de ejecutar el proyecto se recomienda tener instalado:
 
-- Node.js 22 o superior
+- Node.js **22.13 o superior dentro de la versión 22**
 - npm
 - Git
-- Visual Studio Code
-- Expo Go en un dispositivo Android o iOS
+- Visual Studio Code o editor equivalente
+- Expo Go compatible con SDK 57 para pruebas en dispositivo físico
 
-Android Studio puede utilizarse opcionalmente para ejecutar la aplicación mediante un emulador Android.
+Opcionalmente:
 
----
+- Android Studio para utilizar un emulador Android
+
+Verificar Node.js:
+
+```bash
+node --version
+```
+
+Verificar npm:
+
+```bash
+npm --version
+```
 
 ## Instalación
 
-Clonar el repositorio:
+Desde la raíz del repositorio:
 
 ```bash
-git clone <URL_DEL_REPOSITORIO>
+cd mobile
 ```
 
-### Ejecutar la app con la API
-
-La app móvil necesita que la API de Next.js esté ejecutándose en `web/`, además del servidor de Expo. En una terminal, desde `web/`, inicia la API:
+Instalar dependencias:
 
 ```bash
-npm run dev -- --hostname 0.0.0.0
+npm install
 ```
 
-En otra terminal, desde `mobile/`, inicia Expo:
+## Ejecutar la aplicación
+
+Desde la carpeta `mobile`:
 
 ```bash
 npm start
 ```
 
-Si usas Expo Go en un teléfono, conecta el teléfono y la computadora a la misma red Wi-Fi y permite conexiones entrantes al puerto 3000 en el firewall. La app obtiene la dirección de la computadora desde Expo. Si la detección automática no funciona, crea `mobile/.env` con la IP local de la computadora:
+También puede utilizarse:
 
-```env
-EXPO_PUBLIC_API_URL=http://192.168.1.31:3000
+```bash
+npx expo start
 ```
 
-Reemplaza `192.168.1.31` por la dirección IPv4 de tu computadora y reinicia Expo para que lea la variable. No uses `localhost` en un teléfono físico: apuntaría al propio teléfono.
+Si existen problemas relacionados con la caché:
 
-Usuarios de prueba tras el seed: `admin@barberslot.test` / `Admin123!` (administrador) y `henry@barberslot.test` / `Barber123!` (barbero).
-## Pantallas informativas
+```bash
+npx expo start --clear
+```
 
-La navegación pública incluye Inicio, Barberos, Servicios y Horarios.
-Servicios presenta precios, duraciones aproximadas y descripciones; Horarios utiliza el horario publicado en el pie de página: lunes a sábado, de 9:00 a. m. a 5:00 p. m.
-Ambas pantallas incluyen botones para volver al inicio y solicitar una reserva en `/reservar` (pantalla de reserva actualmente pendiente de implementación).
+Después se puede abrir el proyecto desde Expo Go mediante el código QR mostrado en la terminal.
 
-### Imagen de Horarios
+## Importante
 
-Reemplaza `mobile/assets/images/horarios/barberia.png` por tu fotografía en formato PNG, conservando el nombre. Se incluye una copia de la imagen de inicio como imagen inicial. Se recomienda una foto horizontal en proporción 16:9; se recorta para llenar el espacio.
-Si prefieres otro nombre o formato, actualiza `IMAGES.horarios.barberia` en `mobile/src/constants/images.ts` y la descripción accesible en `mobile/src/app/(public)/horarios.tsx` para que coincida con la imagen.
+Los comandos de Expo deben ejecutarse desde:
+
+```text
+barber-slot/mobile
+```
+
+y no desde la raíz:
+
+```text
+barber-slot/
+```
+
+Ejecutar `npx expo start` desde la raíz puede provocar que `npx` intente instalar una versión diferente de Expo.
+
+## Expo SDK
+
+Este proyecto utiliza:
+
+```text
+Expo SDK 57
+```
+
+Los integrantes del grupo deben conservar esta versión para evitar incompatibilidades entre el proyecto y Expo Go.
+
+No se debe actualizar Expo de forma individual sin coordinarlo previamente con el equipo.
+
+## Usuarios de prueba
+
+La autenticación de este avance utiliza usuarios mock.
+
+### Administrador
+
+```text
+Correo: admin@barberslot.test
+Contraseña: Admin123!
+Rol: administrador
+```
+
+### Barbero
+
+```text
+Correo: henry@barberslot.test
+Contraseña: Barber123!
+Rol: barbero
+```
+
+Estos usuarios son únicamente para pruebas de la versión móvil mientras no se encuentre conectada al backend.
+
+## Estructura principal
+
+```text
+mobile/
+├── assets/
+│   └── images/
+│       ├── admin/
+│       ├── barberos/
+│       ├── brand/
+│       ├── home/
+│       └── social/
+│
+├── src/
+│   ├── app/
+│   │   ├── (public)/
+│   │   └── admin/
+│   │
+│   ├── components/
+│   │   ├── admin/
+│   │   ├── layout/
+│   │   └── ui/
+│   │
+│   ├── constants/
+│   ├── contexts/
+│   ├── data/
+│   │   └── mock/
+│   ├── hooks/
+│   ├── services/
+│   └── types/
+│
+├── app.json
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+## Navegación
+
+La aplicación utiliza Expo Router.
+
+Las rutas principales incluyen:
+
+```text
+/                    Landing pública
+/reservar             Reserva
+
+/admin                 Login administrativo
+/admin/inicio          Dashboard administrativo
+/admin/agenda          Agenda diaria
+/admin/servicios       Gestión de servicios
+```
+
+La carpeta:
+
+```text
+(public)
+```
+
+es un Route Group utilizado para organizar las rutas públicas y no forma parte de la URL.
+
+## Diseño visual
+
+### Parte pública
+
+Las interfaces públicas mantienen:
+
+- Fondo blanco.
+- Header oscuro.
+- Elementos dorados.
+- Fuente Montserrat.
+- Identidad visual equivalente a BarberSlot Web.
+
+### Parte administrativa
+
+Las interfaces administrativas utilizan:
+
+- Fondo oscuro.
+- Tarjetas oscuras.
+- Bordes dorados.
+- Texto blanco y gris.
+- Elementos destacados en dorado.
+- Fuente Montserrat.
+
+El Dashboard administrativo móvil conserva la información principal del Dashboard web, adaptándola a una distribución vertical.
+
+## Datos mock
+
+Durante este avance se utilizan datos simulados para permitir el desarrollo independiente del backend.
+
+Actualmente pueden existir mocks para:
+
+- Usuarios.
+- Métricas del Dashboard.
+- Citas.
+- Barberos disponibles.
+- Servicios.
+- Agenda.
+
+En etapas posteriores los servicios mock serán sustituidos por peticiones a la API REST.
+
+## Estado actual
+
+Entre las funcionalidades implementadas se encuentran:
+
+- Navegación con Expo Router.
+- Identidad visual BarberSlot.
+- Fuente Montserrat.
+- Login administrativo.
+- Validaciones de formulario.
+- Usuarios de prueba.
+- Dashboard administrativo.
+- Acceso a Agenda Diaria.
+- Acceso a Servicios.
+- Cierre de sesión.
+- Interfaces públicas iniciales.
+
+## Integración futura
+
+La aplicación móvil utilizará el mismo backend que BarberSlot Web:
+
+```text
+Mobile
+   │
+   ▼
+API REST
+   │
+   ▼
+PostgreSQL
+```
+
+La aplicación móvil no accederá directamente a Prisma ni a PostgreSQL.
+
+## Proyecto académico
+
+BarberSlot Mobile forma parte de la Etapa 3 del proyecto de la asignatura:
+
+**Diseño y Programación de Software Multiplataforma**

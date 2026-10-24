@@ -2,7 +2,8 @@
     mobile/src/app/(public)/index.tsx
     Index de la parte pública
 ================================================ */
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { router } from "expo-router";
 import PublicScreen from "@/components/layout/PublicScreen";
 import PublicHeader from "@/components/layout/PublicHeader";
 import PublicFooter from "@/components/layout/PublicFooter";
@@ -54,6 +55,19 @@ export default function LandingScreen() {
                 </View>
             </View>
 
+            {/* Acceso administrativo */}
+            <View style={styles.adminAccess}>
+                <Text style={styles.adminQuestion}>
+                    ¿Eres administrador o barbero?
+                </Text>
+
+                <Pressable onPress={() => router.push("/admin")}>
+                    <Text style={styles.adminLink}>
+                        Iniciar Sesión
+                    </Text>
+                </Pressable>
+            </View>
+
             <PublicFooter />
         </PublicScreen>
     );
@@ -98,5 +112,21 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
         gap: SPACING.md,
         marginTop: SPACING.xl
+    },
+    adminAccess: {
+        marginTop: SPACING.lg,
+        marginBottom: SPACING.xl,
+        alignItems: "center"
+    },
+    adminQuestion: {
+        fontFamily: "Montserrat_600SemiBold",
+        fontSize: 14,
+        color: COLORS.textSecondary
+    },
+    adminLink: {
+        marginTop: SPACING.sm,
+        fontFamily: "Montserrat_600SemiBold",
+        fontSize: 14,
+        color: COLORS.gold
     }
 });
