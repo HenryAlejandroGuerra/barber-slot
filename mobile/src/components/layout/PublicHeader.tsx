@@ -11,8 +11,8 @@ import { IMAGES } from "@/constants/images";
 const navigation = [
     { label: "Inicio", href: "/" as const },
     { label: "Barberos", href: "/barberos" as const },
-    { label: "Servicios", href: "/servicios" as const },
-    { label: "Horarios", href: "/horarios" as const }
+    { label: "Servicios", href: "/servicios-info" as const },
+    { label: "Horarios", href: "/horarios-info" as const }
 ];
 
 export default function PublicHeader() {
