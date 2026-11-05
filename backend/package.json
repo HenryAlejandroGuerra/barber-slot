@@ -6,7 +6,8 @@
         "dev": "tsx watch src/server.ts",
         "start": "tsx src/server.ts",
         "typecheck": "tsc --noEmit",
-        "prisma:generate": "prisma generate --config=prisma.config.ts"
+        "prisma:generate": "prisma generate --config=prisma.config.ts",
+        "postinstall": "prisma generate --config=prisma.config.ts"
     },
     "keywords": [],
     "author": "",
