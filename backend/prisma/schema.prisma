@@ -1,120 +1,124 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+    provider               = "prisma-client"
+    output                 = "../src/generated/prisma"
+    runtime                = "nodejs"
+    moduleFormat           = "esm"
+    generatedFileExtension = "ts"
+    importFileExtension    = "js"
 }
 
 datasource db {
-  provider = "postgresql"
+    provider = "postgresql"
 }
 
 enum RolUsuario {
-  administrador
-  barbero
+    administrador
+    barbero
 }
 
 enum EstadoCita {
-  pendiente
-  confirmada
-  cancelada
+    pendiente
+    confirmada
+    cancelada
 }
 
 enum DiaSemana {
-  lunes
-  martes
-  miercoles
-  jueves
-  viernes
-  sabado
-  domingo
+    lunes
+    martes
+    miercoles
+    jueves
+    viernes
+    sabado
+    domingo
 }
 
 model Barbero {
-  id           String  @id @default(cuid())
-  nombre       String
-  especialidad String
-  activo       Boolean @default(true)
-  disponible   Boolean @default(true)
-  imagenUrl    String? @map("imagen_url")
+    id           String  @id @default(cuid())
+    nombre       String
+    especialidad String
+    activo       Boolean @default(true)
+    disponible   Boolean @default(true)
+    imagenUrl    String? @map("imagen_url")
 
-  citas    Cita[]
-  usuarios Usuario[]
-  horarios HorarioBarbero[]
+    citas    Cita[]
+    usuarios Usuario[]
+    horarios HorarioBarbero[]
 
-  @@map("barbero")
+    @@map("barbero")
 }
 
 model HorarioBarbero {
-  id String @id @default(cuid())
+    id String @id @default(cuid())
 
-  barberoId String  @map("barbero_id")
-  barbero   Barbero @relation(fields: [barberoId], references: [id], onDelete: Cascade)
+    barberoId String  @map("barbero_id")
+    barbero   Barbero @relation(fields: [barberoId], references: [id], onDelete: Cascade)
 
-  diaSemana DiaSemana @map("dia_semana")
+    diaSemana DiaSemana @map("dia_semana")
 
-  horaInicio DateTime @map("hora_inicio") @db.Time(0)
-  horaFin    DateTime @map("hora_fin") @db.Time(0)
+    horaInicio DateTime @map("hora_inicio") @db.Time(0)
+    horaFin    DateTime @map("hora_fin") @db.Time(0)
 
-  activo Boolean @default(true)
+    activo Boolean @default(true)
 
-  @@unique([barberoId, diaSemana])
-  @@map("horario_barbero")
+    @@unique([barberoId, diaSemana])
+    @@map("horario_barbero")
 }
 
 model Servicio {
-  id              String  @id @default(cuid())
-  nombre          String
-  descripcion     String
-  precio          Decimal @db.Decimal(10, 2)
-  duracionMinutos Int     @map("duracion_minutos")
-  activo          Boolean @default(true)
+    id              String  @id @default(cuid())
+    nombre          String
+    descripcion     String
+    precio          Decimal @db.Decimal(10, 2)
+    duracionMinutos Int     @map("duracion_minutos")
+    activo          Boolean @default(true)
 
-  citas Cita[]
+    citas Cita[]
 
-  @@map("servicio")
+    @@map("servicio")
 }
 
 model Cliente {
-  id       String @id @default(cuid())
-  nombre   String
-  correo   String
-  telefono String
+    id       String @id @default(cuid())
+    nombre   String
+    correo   String
+    telefono String
 
-  citas Cita[]
+    citas Cita[]
 
-  @@map("cliente")
+    @@map("cliente")
 }
 
 model Cita {
-  id String @id @default(cuid())
+    id String @id @default(cuid())
 
-  clienteId String  @map("cliente_id")
-  cliente   Cliente @relation(fields: [clienteId], references: [id])
+    clienteId String  @map("cliente_id")
+    cliente   Cliente @relation(fields: [clienteId], references: [id])
 
-  barberoId String  @map("barbero_id")
-  barbero   Barbero @relation(fields: [barberoId], references: [id])
+    barberoId String  @map("barbero_id")
+    barbero   Barbero @relation(fields: [barberoId], references: [id])
 
-  servicioId String   @map("servicio_id")
-  servicio   Servicio @relation(fields: [servicioId], references: [id])
+    servicioId String   @map("servicio_id")
+    servicio   Servicio @relation(fields: [servicioId], references: [id])
 
-  fechaInicio DateTime   @map("fecha_inicio") @db.Timestamptz
-  fechaFin    DateTime   @map("fecha_fin") @db.Timestamptz
-  estado      EstadoCita @default(pendiente)
+    fechaInicio DateTime   @map("fecha_inicio") @db.Timestamptz
+    fechaFin    DateTime   @map("fecha_fin") @db.Timestamptz
+    estado      EstadoCita @default(pendiente)
 
-  fechaCreacion DateTime @default(now()) @map("fecha_creacion") @db.Timestamptz
+    fechaCreacion DateTime @default(now()) @map("fecha_creacion") @db.Timestamptz
 
-  @@map("cita")
+    @@map("cita")
 }
 
 model Usuario {
-  id         String     @id @default(cuid())
-  nombre     String
-  correo     String     @unique
-  contraHash String     @map("contra_hash")
-  rol        RolUsuario
-  activo     Boolean    @default(true)
+    id         String     @id @default(cuid())
+    nombre     String
+    correo     String     @unique
+    contraHash String     @map("contra_hash")
+    rol        RolUsuario
+    activo     Boolean    @default(true)
 
-  barberoId String?  @map("barbero_id")
-  barbero   Barbero? @relation(fields: [barberoId], references: [id])
+    barberoId String?  @map("barbero_id")
+    barbero   Barbero? @relation(fields: [barberoId], references: [id])
 
-  @@map("usuario")
+    @@map("usuario")
 }
