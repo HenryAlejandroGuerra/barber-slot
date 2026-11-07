@@ -3,7 +3,7 @@
     Controlador HTTP de Barberos
 ===================================================== */
 import type { NextFunction, Request, Response } from "express";
-import { barberoService } from "../services/barbero.service";
+import { barberoService } from "../services/barbero.service.js";
 
 export async function obtenerBarberos(request: Request, response: Response, next: NextFunction) {
     try {

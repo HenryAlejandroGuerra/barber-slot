@@ -4,7 +4,7 @@
 =========================================== */
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../generated/prisma/client";
+import { PrismaClient } from "../generated/prisma/client.js";
 
 const globalParaPrisma = globalThis as unknown as { prisma?: PrismaClient; };
 const connectionString = process.env.DATABASE_URL;

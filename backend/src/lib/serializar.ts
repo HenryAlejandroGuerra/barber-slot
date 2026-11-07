@@ -1,9 +1,8 @@
 /* ===========================================
     backend/src/lib/serializar.ts
-    Prisma devuelve los campos Decimal como objetos Decimal;
-    hay que pasarlos a number antes de responder en JSON.
+    Prisma devuelve los campos Decimal como objetos Decimal. hay que pasarlos a number antes de responder en JSON.
 =========================================== */
-import type { ServicioDTO } from "../types/servicio";
+import type { ServicioDTO } from "../types/servicio.js";
 
 interface ServicioConDecimal {
     id: string;

@@ -2,7 +2,7 @@
     backend/src/routes/disponibilidad.routes.ts
 ================================================ */
 import { Router } from "express";
-import { obtenerDisponibilidad } from "../controllers/disponibilidad.controller";
+import { obtenerDisponibilidad } from "../controllers/disponibilidad.controller.js";
 
 const router = Router();
 

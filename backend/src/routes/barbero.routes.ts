@@ -2,7 +2,7 @@
     backend/src/routes/barbero.routes.ts
 ================================================ */
 import { Router } from "express";
-import { obtenerBarberos } from "../controllers/barbero.controller";
+import { obtenerBarberos } from "../controllers/barbero.controller.js";
 
 const router = Router();
 

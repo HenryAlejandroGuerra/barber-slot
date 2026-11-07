@@ -2,9 +2,9 @@
     backend/src/lib/disponibilidad.ts
     Cálculo de horarios libres para un barbero/servicio/fecha
 =========================================== */
-import { prisma } from "../lib/prisma";
-import { combinarFechaHora } from "../lib/fechas";
-import { HORARIOS_DISPONIBLES_SEED } from "../lib/horarios";
+import { prisma } from "../lib/prisma.js";
+import { combinarFechaHora } from "../lib/fechas.js";
+import { HORARIOS_DISPONIBLES_SEED } from "../lib/horarios.js";
 
 export async function calcularDisponibilidad(
     barberoId: string,

@@ -1,10 +1,10 @@
-/* ================================================
+/* =====================================================
     backend/src/controllers/servicio.controller.ts
-================================================ */
+===================================================== */
 import type { NextFunction, Request, Response } from "express";
 import { z } from "zod";
-import { servicioService } from "../services/servicio.service";
-import type { ParametrosId } from "../types/http";
+import { servicioService } from "../services/servicio.service.js";
+import type { ParametrosId } from "../types/http.js";
 
 const datosServicioSchema =
     z.object({
