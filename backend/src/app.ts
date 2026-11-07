@@ -5,10 +5,10 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import barberoRoutes from "@/routes/barbero.routes";
-import { manejarError } from "@/middleware/error.middleware";
-import servicioRoutes from "@/routes/servicio.routes";
-import disponibilidadRoutes from "@/routes/disponibilidad.routes";
+import barberoRoutes from "./routes/barbero.routes.js";
+import servicioRoutes from "./routes/servicio.routes.js";
+import disponibilidadRoutes from "./routes/disponibilidad.routes.js";
+import { manejarError } from "./middleware/error.middleware.js";
 
 const app = express();
 

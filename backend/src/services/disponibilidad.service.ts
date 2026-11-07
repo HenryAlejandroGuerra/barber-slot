@@ -2,9 +2,9 @@
     backend/src/services/disponibilidad.service.ts
     Servicio de disponibilidad
 ===================================================== */
-import { prisma } from "@/lib/prisma";
-import { combinarFechaHora, obtenerFechaLocalISO } from "@/lib/fechas";
-import { generarHorariosDisponibles } from "@/lib/horarios";
+import { prisma } from "../lib/prisma";
+import { combinarFechaHora, obtenerFechaLocalISO } from "../lib/fechas";
+import { generarHorariosDisponibles } from "../lib/horarios";
 
 export class ErrorDisponibilidad extends Error {
     statusCode: number;

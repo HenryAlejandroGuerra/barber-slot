@@ -2,7 +2,7 @@
     backend/src/lib/horarios.ts
     Reglas generales de horarios de BarberSlot
 ================================================ */
-import { combinarFechaHora } from "@/lib/fechas";
+import { combinarFechaHora } from "../lib/fechas";
 
 export const HORARIOS_DISPONIBLES_SEED = [
     "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",

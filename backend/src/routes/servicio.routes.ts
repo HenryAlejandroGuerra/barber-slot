@@ -2,7 +2,7 @@
     backend/src/routes/servicio.routes.ts
 ================================================ */
 import { Router } from "express";
-import { actualizarServicio, crearServicio, desactivarServicio, obtenerServicios } from "@/controllers/servicio.controller";
+import { actualizarServicio, crearServicio, desactivarServicio, obtenerServicios } from "../controllers/servicio.controller";
 
 const router = Router();
 

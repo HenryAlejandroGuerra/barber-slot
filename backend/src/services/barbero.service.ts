@@ -2,7 +2,7 @@
     backend/src/services/barbero.service.ts
     Lógica de acceso a datos de Barberos
 ================================================ */
-import { prisma } from "@/lib/prisma";
+import { prisma } from "../lib/prisma";
 
 async function obtenerTodos() {
     return prisma.barbero.findMany({

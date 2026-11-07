@@ -4,7 +4,7 @@
 ========================================================== */
 import type { NextFunction, Request, Response } from "express";
 import { z } from "zod";
-import { disponibilidadService, ErrorDisponibilidad } from "@/services/disponibilidad.service";
+import { disponibilidadService, ErrorDisponibilidad } from "../services/disponibilidad.service";
 
 const consultaDisponibilidadSchema = z.object({
     barberoId: z.string().trim().min(1),

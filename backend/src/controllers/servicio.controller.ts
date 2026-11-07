@@ -3,8 +3,8 @@
 ================================================ */
 import type { NextFunction, Request, Response } from "express";
 import { z } from "zod";
-import { servicioService } from "@/services/servicio.service";
-import type { ParametrosId } from "@/types/http";
+import { servicioService } from "../services/servicio.service";
+import type { ParametrosId } from "../types/http";
 
 const datosServicioSchema =
     z.object({

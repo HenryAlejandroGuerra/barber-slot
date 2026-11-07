@@ -3,7 +3,7 @@
     Prisma devuelve los campos Decimal como objetos Decimal;
     hay que pasarlos a number antes de responder en JSON.
 =========================================== */
-import type { ServicioDTO } from "@/types/servicio";
+import type { ServicioDTO } from "../types/servicio";
 
 interface ServicioConDecimal {
     id: string;

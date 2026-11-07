@@ -2,9 +2,9 @@
     backend/src/services/servicio.service.ts
     Acceso a datos y operaciones de Servicios
 ================================================ */
-import { prisma } from "@/lib/prisma";
-import { serializarServicio } from "@/lib/serializar";
-import type { DatosServicio, ServicioDTO } from "@/types/servicio";
+import { prisma } from "../lib/prisma";
+import { serializarServicio } from "../lib/serializar";
+import type { DatosServicio, ServicioDTO } from "../types/servicio";
 
 async function obtenerTodos(): Promise<ServicioDTO[]> {
     const servicios =
