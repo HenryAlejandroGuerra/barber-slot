@@ -9,7 +9,7 @@ async function iniciarSesion(correo: string, contra: string): Promise<SesionUsua
     return apiFetch<SesionUsuario>("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ correo, contra }),
+        body: JSON.stringify({ correo, contra })
     });
 }
 
@@ -36,8 +36,8 @@ async function registrarUsuario(datos: {
             correo: datos.correo,
             contra: datos.contra,
             rol: datos.rol,
-            barberoId: datos.idBarbero,
-        }),
+            barberoId: datos.idBarbero
+        })
     });
 }
 
@@ -45,5 +45,5 @@ export const authService = {
     iniciarSesion,
     obtenerSesionActual,
     cerrarSesion,
-    registrarUsuario,
+    registrarUsuario
 };

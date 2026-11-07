@@ -1,9 +1,9 @@
 /* ================================================
     web/src/services/cita.service.ts
-    Servicio de Cita
+    Servicio encargado de consultar y administrar las citas desde BarberSlot Web.
 ================================================ */
-import type {Cita, EstadoCita} from "@/types/cita";
-import { apiFetch } from "@/lib/apiFetch";
+import type { Cita, EstadoCita } from "@/types/cita";
+import { ApiError, apiFetch } from "@/lib/apiFetch";
 import { separarFechaHora } from "@/lib/fechas";
 
 interface CitaApi {
@@ -12,28 +12,25 @@ interface CitaApi {
     servicioId: string;
     fechaInicio: string;
     fechaFin: string;
-    estado: "pendiente" | "confirmada" | "cancelada";
+    estado: | "pendiente" | "confirmada" | "cancelada";
     fechaCreacion: string;
-    cliente: { nombre: string };
+    cliente: {nombre: string;};
 }
 
-// El backend guarda el estado en femenino (confirmada/cancelada) porque así
-// lo pidió la rúbrica; el frontend ya usaba el masculino, así que se traduce
-// en esta capa para no tocar los componentes que ya consumen citaService.
 const ESTADO_DB_A_FRONTEND: Record<CitaApi["estado"], EstadoCita> = {
     pendiente: "pendiente",
     confirmada: "confirmado",
-    cancelada: "cancelado",
+    cancelada: "cancelado"
 };
 
 const ESTADO_FRONTEND_A_DB: Record<EstadoCita, CitaApi["estado"]> = {
     pendiente: "pendiente",
     confirmado: "confirmada",
-    cancelado: "cancelada",
+    cancelado: "cancelada"
 };
 
 function mapearCita(cita: CitaApi): Cita {
-    const { fecha, hora } = separarFechaHora(new Date(cita.fechaInicio));
+    const {fecha, hora} = separarFechaHora(new Date(cita.fechaInicio));
 
     return {
         id: cita.id,
@@ -43,7 +40,7 @@ function mapearCita(cita: CitaApi): Cita {
         fecha,
         hora,
         estado: ESTADO_DB_A_FRONTEND[cita.estado],
-        fechaCreacion: cita.fechaCreacion,
+        fechaCreacion: cita.fechaCreacion
     };
 }
 
@@ -54,30 +51,21 @@ async function obtenerTodas(): Promise<Cita[]> {
 
 async function obtenerPorFecha(fecha: string): Promise<Cita[]> {
     const citas = await obtenerTodas();
-
-    return citas.filter(
-        (cita) => cita.fecha === fecha
-    );
+    return citas.filter((cita) => cita.fecha === fecha);
 }
 
-async function actualizarEstado(
-    idCita: string,
-    nuevoEstado: EstadoCita
-): Promise<Cita> {
+async function actualizarEstado(idCita: string, nuevoEstado: EstadoCita): Promise<Cita> {
     const citaActualizada = await apiFetch<CitaApi>(`/api/citas/${idCita}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ estado: ESTADO_FRONTEND_A_DB[nuevoEstado] }),
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({estado: ESTADO_FRONTEND_A_DB[nuevoEstado]})
     });
 
     return mapearCita(citaActualizada);
 }
 
-// Se lanza cuando POST /api/citas responde 409: alguien más tomó ese horario
-// primero. Trae la lista de horarios recién recalculada para refrescar la UI.
 export class ErrorHorarioNoDisponible extends Error {
     horarios: string[];
-
     constructor(mensaje: string, horarios: string[]) {
         super(mensaje);
         this.name = "ErrorHorarioNoDisponible";
@@ -96,43 +84,52 @@ interface DatosNuevaCita {
 }
 
 async function crear(datos: DatosNuevaCita): Promise<Cita> {
-    const respuesta = await fetch("/api/citas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            nombreCliente: datos.nombreCliente,
-            correoCliente: datos.correoCliente,
-            telefonoCliente: datos.telefonoCliente,
-            barberoId: datos.idBarbero,
-            servicioId: datos.idServicio,
-            fecha: datos.fecha,
-            hora: datos.hora,
-        }),
-    });
+    try {
+        const cita = await apiFetch<CitaApi>("/api/citas", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                nombreCliente: datos.nombreCliente,
+                correoCliente: datos.correoCliente,
+                telefonoCliente: datos.telefonoCliente,
+                barberoId: datos.idBarbero,
+                servicioId: datos.idServicio,
+                fecha: datos.fecha,
+                hora: datos.hora
+            })
+        });
 
-    const cuerpo = await respuesta.json().catch(() => null);
+        return mapearCita(cita);
+    } catch (error) {
+        if (error instanceof ApiError && error.status === 409) {
+            let horarios = Array.isArray(error.body?.horarios) ? error.body.horarios : [];
 
-    if (respuesta.status === 409) {
-        throw new ErrorHorarioNoDisponible(
-            cuerpo?.error ?? "Ese horario ya no está disponible.",
-            cuerpo?.horarios ?? []
-        );
+            if (horarios.length === 0) {
+                try {
+                    horarios = await obtenerDisponibilidad(
+                        datos.idBarbero,
+                        datos.idServicio,
+                        datos.fecha
+                    );
+                } catch {
+                    horarios = [];
+                }
+            }
+
+            throw new ErrorHorarioNoDisponible(error.message, horarios);
+        }
+        
+        throw error;
     }
-
-    if (!respuesta.ok) {
-        throw new Error(typeof cuerpo?.error === "string" ? cuerpo.error : "No se pudo crear la cita.");
-    }
-
-    return mapearCita(cuerpo as CitaApi);
 }
 
-async function obtenerDisponibilidad(
-    idBarbero: string,
-    idServicio: string,
-    fecha: string
-): Promise<string[]> {
-    const parametros = new URLSearchParams({ barberoId: idBarbero, servicioId: idServicio, fecha });
-    const { horarios } = await apiFetch<{ horarios: string[] }>(`/api/disponibilidad?${parametros}`);
+async function obtenerDisponibilidad(idBarbero: string, idServicio: string, fecha: string): Promise<string[]> {
+    const parametros = new URLSearchParams({
+        barberoId: idBarbero,
+        servicioId: idServicio,
+        fecha
+    });
+    const {horarios} = await apiFetch<{horarios: string[];}>(`/api/disponibilidad?${parametros}`);
     return horarios;
 }
 
@@ -141,5 +138,5 @@ export const citaService = {
     obtenerPorFecha,
     actualizarEstado,
     crear,
-    obtenerDisponibilidad,
+    obtenerDisponibilidad
 };

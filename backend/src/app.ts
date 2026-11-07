@@ -8,6 +8,8 @@ import helmet from "helmet";
 import barberoRoutes from "./routes/barbero.routes.js";
 import servicioRoutes from "./routes/servicio.routes.js";
 import disponibilidadRoutes from "./routes/disponibilidad.routes.js";
+import citaRoutes from "./routes/cita.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 import { manejarError } from "./middleware/error.middleware.js";
 
 const app = express();
@@ -33,9 +35,11 @@ app.get("/api/health", (request, response) => {
 });
 
 /* Rutas */
+app.use("/api/auth", authRoutes);
 app.use("/api/barberos", barberoRoutes);
 app.use("/api/servicios", servicioRoutes);
 app.use("/api/disponibilidad", disponibilidadRoutes);
+app.use("/api/citas", citaRoutes);
 
 /* Middleware de errores */
 app.use(manejarError);

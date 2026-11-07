@@ -1,10 +1,9 @@
 /* ================================================
-    web/prisma/seed.ts
+    backend/prisma/seed.ts
     Datos de ejemplo para desarrollo (reemplaza al mock de localStorage)
 ================================================ */
 import { config } from "dotenv";
 config({ path: ".env.local" });
-
 import bcrypt from "bcrypt";
 import { prisma } from "../src/lib/prisma";
 import { combinarFechaHora, obtenerFechaLocalISO } from "../src/lib/fechas";
@@ -19,29 +18,29 @@ async function main() {
     await prisma.servicio.deleteMany();
 
     const henry = await prisma.barbero.create({
-        data: { nombre: "Henry Martinez", especialidad: "Corte y barba", activo: true, disponible: true, imagenUrl: "/images/barberos/pablo-neruda.jpg" },
+        data: { nombre: "Henry Martinez", especialidad: "Corte y barba", activo: true, disponible: true, imagenUrl: "/images/barberos/pablo-neruda.jpg" }
     });
     const francisco = await prisma.barbero.create({
-        data: { nombre: "Francisco Duran", especialidad: "Corte", activo: true, disponible: true, imagenUrl: "/images/barberos/nelson-portillo.jpg" },
+        data: { nombre: "Francisco Duran", especialidad: "Corte", activo: true, disponible: true, imagenUrl: "/images/barberos/nelson-portillo.jpg" }
     });
     const christopher = await prisma.barbero.create({
-        data: { nombre: "Christopher Alvarenga", especialidad: "Barba", activo: true, disponible: true, imagenUrl: "/images/barberos/juan-melendez.jpg" },
+        data: { nombre: "Christopher Alvarenga", especialidad: "Barba", activo: true, disponible: true, imagenUrl: "/images/barberos/juan-melendez.jpg" }
     });
     const carlos = await prisma.barbero.create({
-        data: { nombre: "Carlos Villacorta", especialidad: "Corte clásico", activo: true, disponible: true, imagenUrl: "/images/barberos/primero-disponible.jpg" },
+        data: { nombre: "Carlos Villacorta", especialidad: "Corte clásico", activo: true, disponible: true, imagenUrl: "/images/barberos/primero-disponible.jpg" }
     });
 
     const soloCorte = await prisma.servicio.create({
-        data: { nombre: "Solo Corte", descripcion: "Servicio de corte de cabello.", precio: 5, duracionMinutos: 30, activo: true },
+        data: { nombre: "Solo Corte", descripcion: "Servicio de corte de cabello.", precio: 5, duracionMinutos: 30, activo: true }
     });
     const corteYBarba = await prisma.servicio.create({
-        data: { nombre: "Corte y Barba", descripcion: "Servicio combinado de corte y barba.", precio: 8, duracionMinutos: 45, activo: true },
+        data: { nombre: "Corte y Barba", descripcion: "Servicio combinado de corte y barba.", precio: 8, duracionMinutos: 45, activo: true }
     });
     const soloBarba = await prisma.servicio.create({
-        data: { nombre: "Solo Barba", descripcion: "Perfilado y arreglo de barba.", precio: 3, duracionMinutos: 15, activo: true },
+        data: { nombre: "Solo Barba", descripcion: "Perfilado y arreglo de barba.", precio: 3, duracionMinutos: 15, activo: true }
     });
     await prisma.servicio.create({
-        data: { nombre: "Afeitado Clásico", descripcion: "Servicio de afeitado clásico.", precio: 2, duracionMinutos: 10, activo: true },
+        data: { nombre: "Afeitado Clásico", descripcion: "Servicio de afeitado clásico.", precio: 2, duracionMinutos: 10, activo: true }
     });
 
     await prisma.usuario.create({
@@ -50,8 +49,8 @@ async function main() {
             correo: "admin@barberslot.test",
             contraHash: await bcrypt.hash("Admin123!", 10),
             rol: "administrador",
-            activo: true,
-        },
+            activo: true
+        }
     });
     await prisma.usuario.create({
         data: {
@@ -60,8 +59,8 @@ async function main() {
             contraHash: await bcrypt.hash("Barber123!", 10),
             rol: "barbero",
             activo: true,
-            barberoId: henry.id,
-        },
+            barberoId: henry.id
+        }
     });
 
     const hoy = obtenerFechaLocalISO();
@@ -85,8 +84,8 @@ async function main() {
                 estado,
                 barbero: { connect: { id: barberoId } },
                 servicio: { connect: { id: servicioId } },
-                cliente: { create: { nombre: nombreCliente, correo, telefono: "0000-0000" } },
-            },
+                cliente: { create: { nombre: nombreCliente, correo, telefono: "0000-0000" } }
+            }
         });
     }
 
@@ -99,11 +98,7 @@ async function main() {
     console.log("Seed completado.");
 }
 
-main()
-    .catch((error) => {
-        console.error(error);
-        process.exitCode = 1;
-    })
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+}).finally(async () => { await prisma.$disconnect(); });
