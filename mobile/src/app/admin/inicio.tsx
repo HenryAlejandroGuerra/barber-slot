@@ -10,9 +10,18 @@ import BrandHeader from "@/components/layout/BrandHeader";
 import { COLORS, RADIUS } from "@/constants/theme";
 import { IMAGES } from "@/constants/images";
 import { dashboardMock } from "@/data/mock/dashboard.mock";
+import { authService } from "@/services/auth.service";
 
 export default function AdminInicioScreen() {
     const { resumen, citasNuevas, barberosDisponibles } = dashboardMock;
+
+    async function cerrarSesion() {
+        try {
+            await authService.cerrarSesion();
+        } finally {
+            router.replace("/admin");
+        }
+    }
 
     return (
         <AdminScreen>
@@ -50,6 +59,15 @@ export default function AdminInicioScreen() {
                     <Text style={styles.quickActionText}>
                         Servicios
                     </Text>
+                    <Text style={styles.quickActionArrow}>
+                        ›
+                    </Text>
+                </Pressable>
+                <Pressable style={styles.quickAction} onPress={() => router.push("/admin/historial")}>
+                    <Text style={styles.quickActionText}>
+                        Historial de reservas
+                    </Text>
+
                     <Text style={styles.quickActionArrow}>
                         ›
                     </Text>
@@ -122,7 +140,7 @@ export default function AdminInicioScreen() {
                 </View>
 
                 {/* Cerrar sesión */}
-                <Pressable style={styles.logoutButton} onPress={() => router.replace("/admin")}>
+                <Pressable style={styles.logoutButton} onPress={cerrarSesion}>
                     <Text style={styles.logoutText}>
                         Cerrar Sesión
                     </Text>

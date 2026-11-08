@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "836358896977",
+    "project_id": "barberslot-firebase",
+    "storage_bucket": "barberslot-firebase.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836358896977:android:3f7bdb1cfdee15911ee770",
+        "android_client_info": {
+          "package_name": "com.barberslot.mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "836358896977-m4g7ik2b853jsabj16c1rvfkrmb63v6k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.barberslot.mobile",
+            "certificate_hash": "b2095cdd4414b655c409ba5359de1b5ac3946c69"
+          }
+        },
+        {
+          "client_id": "836358896977-q9n8m2njjh900bhub0t94cf0m08om0ic.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDyPVbbxo2dmQ1fudq6hBluKx4aa821xM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "836358896977-q9n8m2njjh900bhub0t94cf0m08om0ic.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

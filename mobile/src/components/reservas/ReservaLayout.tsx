@@ -1,5 +1,9 @@
+/* =====================================================
+    mobile/src/components/reservas/ReservaLayout.tsx
+    Contenedor general para pantallas de Reservas, con soporte de scroll y teclado en formularios.
+===================================================== */
 import type { ReactNode } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import PublicScreen from "@/components/layout/PublicScreen";
 import BrandHeader from "@/components/layout/BrandHeader";
 import { COLORS, RADIUS } from "@/constants/theme";
@@ -12,25 +16,48 @@ export function ReservaButton({ title, onPress, disabled = false, secondary = fa
         <Text style={styles.buttonText}>{title}</Text>
     </Pressable>;
 }
+
 export default function ReservaLayout({ paso, title, children }: { paso: number; title: string; children: ReactNode }) {
-    return <PublicScreen><BrandHeader />
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    return (
+        <PublicScreen>
+            <BrandHeader />
             <View style={styles.content}>
-                <Text style={styles.eyebrow}>RESERVA TU CITA</Text>
-                <Text accessibilityRole="header" style={styles.title}>{title}</Text>
-                <Text style={styles.subtitle}>Completa los pasos para agendar una experiencia hecha para ti.</Text>
-                <View style={styles.steps} accessibilityLabel={'Paso ' + paso + ' de 4'}>
-                    {["Barbero", "Servicio", "Horario", "Datos"].map((label, i) =>
+                <Text style={styles.eyebrow}>
+                    RESERVA TU CITA
+                </Text>
+
+                <Text accessibilityRole="header" style={styles.title}>
+                    {title}
+                </Text>
+
+                <Text style={styles.subtitle}>
+                    Completa los pasos para agendar una experiencia hecha para ti.
+                </Text>
+
+                <View style={styles.steps} accessibilityLabel={"Paso " + paso + " de 4"}>
+                    {["Barbero", "Servicio", "Horario", "Datos"].map((label, i) => (
                         <View key={label} style={styles.step}>
-                            <View style={[styles.circle, i < paso && styles.active]}><Text style={styles.number}>{i + 1}</Text></View>
-                            <Text style={styles.stepLabel}>{label}</Text>
-                        </View>)}
+                            <View style={[styles.circle, i < paso && styles.active]}>
+                                <Text style={styles.number}>
+                                    {i + 1}
+                                </Text>
+                            </View>
+
+                            <Text style={styles.stepLabel}>
+                                {label}
+                            </Text>
+                        </View>
+                    ))}
                 </View>
-                <View style={styles.card}>{children}</View>
+
+                <View style={styles.card}>
+                    {children}
+                </View>
             </View>
-        </KeyboardAvoidingView>
-    </PublicScreen>;
+        </PublicScreen>
+    );
 }
+
 export const styles = StyleSheet.create({
     content: { padding: 20, paddingBottom: 48, gap: 16 },
     eyebrow: { color: COLORS.gold, textAlign: "center", letterSpacing: 3, fontFamily: "Montserrat_700Bold", fontSize: 12 },

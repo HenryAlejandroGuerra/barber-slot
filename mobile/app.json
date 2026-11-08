@@ -1,36 +1,47 @@
 {
-    "expo": {
-        "name": "BarberSlot",
-        "slug": "barberslot-mobile",
-        "version": "1.0.0",
-        "orientation": "portrait",
-        "icon": "./assets/images/brand/logo.png",
-        "scheme": "barberslot",
-        "userInterfaceStyle": "automatic",
-        "ios": {
-            "supportsTablet": true
-        },
-        "android": {
-            "predictiveBackGestureEnabled": false
-        },
-        "web": {
-            "output": "static"
-        },
-        "plugins": [
-            "expo-router",
-            [
-                "expo-splash-screen",
-                {
-                    "backgroundColor": "#0D0D0D",
-                    "image": "./assets/images/brand/logo.png",
-                    "imageWidth": 100
-                }
-            ],
-            "expo-font"
-        ],
-        "experiments": {
-            "typedRoutes": true,
-            "reactCompiler": true
+  "expo": {
+    "name": "BarberSlot",
+    "slug": "barberslot-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/brand/app-icon.png",
+    "scheme": "barberslot",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.barberslot.mobile",
+      "googleServicesFile": "./google-services.json",
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0D0D0D",
+          "image": "./assets/images/brand/logo.png",
+          "imageWidth": 100
         }
-    }
+      ],
+      "expo-font",
+      "expo-dev-client",
+      "react-native-nitro-google-signin"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ce9501d8-bf3c-446b-9c32-9f5dd7fa8b66"
+      }
+    },
+    "owner": "alejandrodev99s-team"
+  }
 }

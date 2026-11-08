@@ -1,6 +1,6 @@
 /* ================================================
     mobile/src/app/admin/index.tsx
-    Inicio de sesión administrativo mediante Firebase Authentication y perfiles de Firestore.
+    Inicio de sesión administrativo mediante Firebase Authentication, Google y Firestore.
 ================================================ */
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
@@ -18,10 +18,31 @@ export default function AdminLoginScreen() {
     const [mostrarContra, setMostrarContra] = useState(false);
     const [error, setError] = useState("");
     const [cargando, setCargando] = useState(false);
+    const [cargandoGoogle, setCargandoGoogle] = useState(false);
+    const bloqueado = cargando || cargandoGoogle;
+
+    async function validarAcceso(usuarioUid: string): Promise<boolean> {
+        const perfil = await usuarioService.obtenerPerfil(usuarioUid);
+
+        if (!perfil) {
+            await authService.cerrarSesion();
+            setError("Esta cuenta no tiene un perfil asociado al panel administrativo.");
+
+            return false;
+        }
+
+        if (perfil.rol !== "administrador" && perfil.rol !== "barbero") {
+            await authService.cerrarSesion();
+            setError("Este usuario no tiene acceso al panel administrativo.");
+
+            return false;
+        }
+
+        return true;
+    }
 
     async function iniciarSesion() {
         setError("");
-
         const correoLimpio = correo.trim();
 
         if (!correoLimpio || !contra.trim()) {
@@ -40,26 +61,51 @@ export default function AdminLoginScreen() {
 
         try {
             const usuario = await authService.iniciarSesion(correoLimpio, contra);
-            const perfil = await usuarioService.obtenerPerfil(usuario.uid);
+            const accesoPermitido = await validarAcceso(usuario.uid);
 
-            if (!perfil) {
-                await authService.cerrarSesion();
-                setError("No existe un perfil asociado a este usuario.");
-                return;
-            }
-
-            if (perfil.rol !== "administrador" && perfil.rol !== "barbero") {
-                await authService.cerrarSesion();
-                setError("Este usuario no tiene acceso al panel administrativo.");
+            if (!accesoPermitido) {
                 return;
             }
 
             router.replace("/admin/inicio");
         } catch (error) {
-            console.error("Error al iniciar sesión:", error);
-            setError("Correo electrónico o contraseña incorrectos.");
+            console.error(
+                "Error al iniciar sesión:",
+                error
+            );
+
+            setError(
+                "Correo electrónico o contraseña incorrectos."
+            );
         } finally {
             setCargando(false);
+        }
+    }
+
+    async function iniciarSesionGoogle() {
+        setError("");
+        setCargandoGoogle(true);
+
+        try {
+            const usuario = await authService.iniciarSesionConGoogle();
+
+            if (!usuario) {
+                return;
+            }
+
+            const accesoPermitido = await validarAcceso(usuario.uid);
+
+            if (!accesoPermitido) {
+                return;
+            }
+
+            router.replace("/admin/inicio");
+        } catch (error) {
+            console.error("Error al iniciar sesión con Google:", error);
+
+            setError("No se pudo iniciar sesión con Google.");
+        } finally {
+            setCargandoGoogle(false);
         }
     }
 
@@ -88,7 +134,7 @@ export default function AdminLoginScreen() {
                         keyboardType="email-address"
                         autoCapitalize="none"
                         autoCorrect={false}
-                        editable={!cargando}
+                        editable={!bloqueado}
                         style={styles.input}
                     />
 
@@ -103,22 +149,18 @@ export default function AdminLoginScreen() {
                             placeholder="Ingresa tu contraseña"
                             placeholderTextColor={COLORS.textSecondary}
                             secureTextEntry={!mostrarContra}
-                            editable={!cargando}
+                            editable={!bloqueado}
                             onSubmitEditing={iniciarSesion}
                             style={styles.passwordInput}
                         />
 
-                        <Pressable onPress={() => setMostrarContra(!mostrarContra)}>
-                            <Ionicons
-                                name={mostrarContra ? "eye-off-outline" : "eye-outline"}
-                                size={23}
-                                color={COLORS.textSecondary}
-                            />
+                        <Pressable onPress={() => setMostrarContra(!mostrarContra)} disabled={bloqueado}>
+                            <Ionicons name={mostrarContra ? "eye-off-outline" : "eye-outline"} size={23} color={COLORS.textSecondary} />
                         </Pressable>
                     </View>
 
                     <View style={styles.options}>
-                    <View />
+                        <View />
                         <Text style={styles.forgot}>
                             ¿Olvidaste tu contraseña?
                         </Text>
@@ -130,14 +172,29 @@ export default function AdminLoginScreen() {
                         </Text>
                     )}
 
-                    <Pressable style={styles.loginButton} onPress={iniciarSesion} disabled={cargando}>
+                    <Pressable style={styles.loginButton} onPress={iniciarSesion} disabled={bloqueado}>
                         <Text style={styles.loginText}>
                             {cargando ? "INGRESANDO..." : "INGRESAR"}
                         </Text>
                     </Pressable>
+
+                    <View style={styles.dividerContainer}>
+                        <View style={styles.divider} />
+                        <Text style={styles.dividerText}>
+                            O
+                        </Text>
+                        <View style={styles.divider} />
+                    </View>
+
+                    <Pressable style={styles.googleButton} onPress={iniciarSesionGoogle} disabled={bloqueado}>
+                        <Ionicons name="logo-google" size={21} color={COLORS.textDark} />
+                        <Text style={styles.googleText}>
+                            {cargandoGoogle ? "CONECTANDO..." : "CONTINUAR CON GOOGLE"}
+                        </Text>
+                    </Pressable>
                 </View>
 
-                <Pressable style={styles.backButton} onPress={() => router.replace("/")} disabled={cargando}>
+                <Pressable style={styles.backButton} onPress={() => router.replace("/")} disabled={bloqueado}>
                     <Text style={styles.backText}>
                         ← Regresar al inicio
                     </Text>
@@ -232,6 +289,36 @@ const styles = StyleSheet.create({
         fontFamily: "Montserrat_800ExtraBold",
         fontSize: 17,
         color: COLORS.black
+    },
+    dividerContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginVertical: 20
+    },
+    divider: {
+        flex: 1,
+        height: 1,
+        backgroundColor: COLORS.adminBorder
+    },
+    dividerText: {
+        marginHorizontal: 12,
+        fontFamily: "Montserrat_600SemiBold",
+        fontSize: 12,
+        color: COLORS.textSecondary
+    },
+    googleButton: {
+        minHeight: 54,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 10,
+        borderRadius: RADIUS.md,
+        backgroundColor: COLORS.white
+    },
+    googleText: {
+        fontFamily: "Montserrat_700Bold",
+        fontSize: 13,
+        color: COLORS.textDark
     },
     backButton: {
         marginTop: 28,
