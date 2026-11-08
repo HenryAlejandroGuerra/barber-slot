@@ -1,6 +1,6 @@
 /* ================================================
     mobile/src/app/admin/index.tsx
-    Index de la parte administrativa
+    Inicio de sesión administrativo mediante Firebase Authentication y perfiles de Firestore.
 ================================================ */
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
@@ -9,42 +9,58 @@ import { router } from "expo-router";
 import AdminScreen from "@/components/admin/AdminScreen";
 import BrandHeader from "@/components/layout/BrandHeader";
 import { COLORS, RADIUS } from "@/constants/theme";
-import { USUARIOS_MOCK } from "@/data/mock/usuarios.mock";
+import { authService } from "@/services/auth.service";
+import { usuarioService } from "@/services/usuario.service";
 
 export default function AdminLoginScreen() {
     const [correo, setCorreo] = useState("");
     const [contra, setContra] = useState("");
     const [mostrarContra, setMostrarContra] = useState(false);
-    const [recordarme, setRecordarme] = useState(false);
     const [error, setError] = useState("");
+    const [cargando, setCargando] = useState(false);
 
-    function iniciarSesion() {
+    async function iniciarSesion() {
         setError("");
 
-        if (!correo.trim() || !contra.trim()) {
+        const correoLimpio = correo.trim();
+
+        if (!correoLimpio || !contra.trim()) {
             setError("Completa el correo electrónico y la contraseña.");
             return;
         }
 
         const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        if (!correoValido.test(correo.trim())) {
+        if (!correoValido.test(correoLimpio)) {
             setError("Ingresa un correo electrónico válido.");
             return;
         }
 
-        const usuario = USUARIOS_MOCK.find((item) =>
-            item.correo.toLowerCase() === correo.trim().toLowerCase() &&
-            item.contra === contra &&
-            item.activo
-        );
+        setCargando(true);
 
-        if (!usuario) {
-            setError("Correo o contraseña incorrectos.");
-            return;
+        try {
+            const usuario = await authService.iniciarSesion(correoLimpio, contra);
+            const perfil = await usuarioService.obtenerPerfil(usuario.uid);
+
+            if (!perfil) {
+                await authService.cerrarSesion();
+                setError("No existe un perfil asociado a este usuario.");
+                return;
+            }
+
+            if (perfil.rol !== "administrador" && perfil.rol !== "barbero") {
+                await authService.cerrarSesion();
+                setError("Este usuario no tiene acceso al panel administrativo.");
+                return;
+            }
+
+            router.replace("/admin/inicio");
+        } catch (error) {
+            console.error("Error al iniciar sesión:", error);
+            setError("Correo electrónico o contraseña incorrectos.");
+        } finally {
+            setCargando(false);
         }
-
-        router.replace("/admin/inicio");
     }
 
     return (
@@ -72,6 +88,7 @@ export default function AdminLoginScreen() {
                         keyboardType="email-address"
                         autoCapitalize="none"
                         autoCorrect={false}
+                        editable={!cargando}
                         style={styles.input}
                     />
 
@@ -86,6 +103,8 @@ export default function AdminLoginScreen() {
                             placeholder="Ingresa tu contraseña"
                             placeholderTextColor={COLORS.textSecondary}
                             secureTextEntry={!mostrarContra}
+                            editable={!cargando}
+                            onSubmitEditing={iniciarSesion}
                             style={styles.passwordInput}
                         />
 
@@ -99,18 +118,7 @@ export default function AdminLoginScreen() {
                     </View>
 
                     <View style={styles.options}>
-                        <Pressable style={styles.remember} onPress={() => setRecordarme(!recordarme)}>
-                            <Ionicons
-                                name={recordarme ? "checkbox" : "square-outline"}
-                                size={21}
-                                color={COLORS.gold}
-                            />
-
-                            <Text style={styles.rememberText}>
-                                Recordarme
-                            </Text>
-                        </Pressable>
-
+                    <View />
                         <Text style={styles.forgot}>
                             ¿Olvidaste tu contraseña?
                         </Text>
@@ -122,14 +130,14 @@ export default function AdminLoginScreen() {
                         </Text>
                     )}
 
-                    <Pressable style={styles.loginButton} onPress={iniciarSesion} >
+                    <Pressable style={styles.loginButton} onPress={iniciarSesion} disabled={cargando}>
                         <Text style={styles.loginText}>
-                            INGRESAR
+                            {cargando ? "INGRESANDO..." : "INGRESAR"}
                         </Text>
                     </Pressable>
                 </View>
 
-                <Pressable style={styles.backButton} onPress={() => router.replace("/")} >
+                <Pressable style={styles.backButton} onPress={() => router.replace("/")} disabled={cargando}>
                     <Text style={styles.backText}>
                         ← Regresar al inicio
                     </Text>
@@ -202,16 +210,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         marginBottom: 18
-    },
-    remember: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 7
-    },
-    rememberText: {
-        fontFamily: "Montserrat_400Regular",
-        fontSize: 12,
-        color: COLORS.textSecondary
     },
     forgot: {
         fontFamily: "Montserrat_500Medium",

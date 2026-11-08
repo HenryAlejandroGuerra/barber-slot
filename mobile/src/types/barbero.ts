@@ -8,5 +8,5 @@ export interface Barbero {
     especialidad: string;
     activo: boolean;
     disponible: boolean;
-    imagenUrl?: string;
+    imagenUrl?: string | null;
 }

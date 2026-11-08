@@ -5,6 +5,7 @@ import ReservaLayout, { ReservaButton, styles } from "@/components/reservas/Rese
 import { fechaValida, useReserva } from "@/components/reservas/ReservaContext";
 import { citaService } from "@/services/cita.service";
 import ResumenReserva from "@/components/reservas/ResumenReserva";
+import { reservaFirestoreService } from "@/services/reservaFirestore.service";
 
 export default function DetallesCitaScreen() {
     const r = useReserva();
@@ -22,10 +23,12 @@ export default function DetallesCitaScreen() {
         if (!/^\+?[\d\s()-]+$/.test(r.telefono.trim()) || r.telefono.replace(/\D/g, "").length < 8 || r.telefono.replace(/\D/g, "").length > 15) return "Ingresa un teléfono válido de 8 a 15 dígitos.";
         return "";
     }
+
     function confirmarDatos() {
         const mensaje = validar();
         setError(mensaje); setRevisado(!mensaje);
     }
+
     async function reservar() {
         const mensaje = validar();
         setError(mensaje);
@@ -39,10 +42,35 @@ export default function DetallesCitaScreen() {
                 barberoId: r.barberoId,
                 servicioId: r.servicioSeleccionado!,
                 fecha: r.fecha,
-                hora: r.horaSeleccionada!,
+                hora: r.horaSeleccionada!
             });
+
+            const barbero = r.barberos.find((item) => item.id === r.barberoId);
+            const servicio = r.servicios.find((item) => item.id === r.servicioSeleccionado);
+
+            try {
+                const guardadaEnFirestore = await reservaFirestoreService.guardarReserva({
+                    cita,
+                    barberoId: r.barberoId,
+                    barberoNombre: barbero?.nombre ?? "Barbero",
+                    servicioId: r.servicioSeleccionado!,
+                    servicioNombre: servicio?.nombre ?? "Servicio",
+                    fecha: r.fecha,
+                    hora: r.horaSeleccionada!
+                });
+
+                if (guardadaEnFirestore) {
+                    console.log("Reserva guardada en Firestore:", cita.id);
+                } else {
+                    console.log("Reserva creada sin historial Firestore: no hay usuario autenticado.");
+                }
+            } catch (errorFirestore) {
+                console.error("La cita se creó, pero no se pudo guardar su historial en Firestore:", errorFirestore);
+            }
+
             r.setCitaCreada(cita);
             r.setConfirmada(true);
+
             router.replace("/cita-reservada");
         } catch (motivo) {
             setError(motivo instanceof Error ? motivo.message : "No se pudo guardar la cita. Inténtalo nuevamente.");
@@ -50,6 +78,7 @@ export default function DetallesCitaScreen() {
             setGuardando(false);
         }
     }
+
     return <ReservaLayout paso={4} title="Detalles de la cita">
         <Text style={styles.heading}>Datos del cliente</Text>
         <Text style={styles.text}>Nombre completo</Text>

@@ -3,7 +3,7 @@
     Servicio de Barbero
 ================================================ */
 import type { Barbero } from "@/types/barbero";
-import { apiFetch } from "@/lib/apiClient";
+import { apiFetch } from "@/lib/apiFetch";
 
 async function obtenerTodos(): Promise<Barbero[]> {
     return apiFetch<Barbero[]>("/api/barberos");
