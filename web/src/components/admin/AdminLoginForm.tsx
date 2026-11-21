@@ -10,7 +10,7 @@ import {useAuth} from "@/contexts/AuthContext";
 export default function AdminLoginForm() {
     const router = useRouter();
     const {iniciarSesion} = useAuth();
-    const [correo, setCorreo,] = useState("");
+    const [correo, setCorreo] = useState("");
     const [contra, setContra] = useState("");
     const [error, setError] = useState("");
     const [cargando, setCargando] = useState(false);
@@ -22,9 +22,7 @@ export default function AdminLoginForm() {
 
         try {
             await iniciarSesion(correo, contra);
-            router.replace(
-                "/admin/inicio"
-            );
+            router.replace("/admin/inicio");
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message);

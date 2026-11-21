@@ -37,6 +37,21 @@ export async function iniciarSesion(request: Request, response: Response, next: 
 export async function obtenerSesionActual(request: Request, response: Response, next: NextFunction) {
     try {
         const sesion = response.locals.sesion as PayloadSesion;
+
+        /* Cuando la autenticación proviene de Firebase, el perfil ya fue validado en Firestore por auth.middleware. */
+        if (response.locals.origenAuth === "firebase") {
+            response.json({
+                idUsuario: sesion.idUsuario,
+                nombre: sesion.nombre,
+                correo: sesion.correo,
+                rol: sesion.rol,
+                idBarbero: sesion.idBarbero
+            });
+
+            return;
+        }
+
+        /* Compatibilidad temporal con la sesión HMAC y los usuarios almacenados en PostgreSQL. */
         const usuario = await authService.obtenerSesionActual(sesion.idUsuario);
         response.json(usuario);
     } catch (error) {
