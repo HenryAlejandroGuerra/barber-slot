@@ -13,6 +13,7 @@ interface AuthContextType {
     cargando: boolean;
 
     iniciarSesion: (correo: string, contra: string) => Promise<SesionUsuario>;
+    iniciarSesionGoogle: () => Promise<SesionUsuario>;
     cerrarSesion: () => Promise<void>;
 }
 
@@ -22,7 +23,7 @@ async function obtenerSesionAutorizada(uid: string): Promise<SesionUsuario> {
     const perfil = await usuarioService.obtenerPerfil(uid);
 
     if (!perfil) {
-        throw new Error("No existe un perfil asociado a este usuario.");
+        throw new Error("Esta cuenta no tiene un perfil asociado al panel administrativo.");
     }
 
     if (perfil.rol !== "administrador" && perfil.rol !== "barbero") {
@@ -47,7 +48,6 @@ export function AuthProvider({children}: {children: React.ReactNode;}) {
             try {
                 const sesionActual = await obtenerSesionAutorizada(usuario.uid);
                 setSesion(sesionActual);
-
             } catch (error) {
                 console.error("No se pudo restaurar la sesión:", error);
                 await firebaseAuthService.cerrarSesion();
@@ -73,13 +73,26 @@ export function AuthProvider({children}: {children: React.ReactNode;}) {
         }
     }
 
+    async function iniciarSesionGoogle(): Promise<SesionUsuario> {
+        const usuario = await firebaseAuthService.iniciarSesionGoogle();
+
+        try {
+            const nuevaSesion = await obtenerSesionAutorizada(usuario.uid);
+            setSesion(nuevaSesion);
+            return nuevaSesion;
+        } catch (error) {
+            await firebaseAuthService.cerrarSesion();
+            throw error;
+        }
+    }
+
     async function cerrarSesion() {
         await firebaseAuthService.cerrarSesion();
         setSesion(null);
     }
 
     return (
-        <AuthContext.Provider value={{ sesion, cargando, iniciarSesion, cerrarSesion }}>
+        <AuthContext.Provider value={{ sesion, cargando, iniciarSesion, iniciarSesionGoogle, cerrarSesion }}>
             {children}
         </AuthContext.Provider>
     );
