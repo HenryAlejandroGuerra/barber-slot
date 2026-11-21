@@ -18,10 +18,18 @@ const app = express();
 app.use(helmet());
 
 /* CORS */
+const origenesPermitidos = ["http://localhost:3000", process.env.WEB_ORIGIN].filter((origen): origen is string => Boolean(origen));
+
 app.use(cors({
-        origin: process.env.WEB_ORIGIN ?? "http://localhost:3000", credentials: true
-    })
-);
+    origin(origin, callback) {
+        if (!origin || origenesPermitidos.includes(origin)) {
+            callback(null, true);
+            return;
+        }
+
+        callback(new Error(`Origen no permitido por CORS: ${origin}`));
+    }, credentials: true
+}));
 
 /* JSON */
 app.use(express.json({limit: "1mb"}));
