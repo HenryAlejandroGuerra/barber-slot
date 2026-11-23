@@ -118,8 +118,8 @@ const DIAS_SEMANA = [
 export default function AgendaScreen() {
     const [barberoSeleccionado, setBarberoSeleccionado] = useState("Todos");
     const [mostrarBarberos, setMostrarBarberos] = useState(false);
-    const [fechaSeleccionada, setFechaSeleccionada] = useState(new Date(2026, 0, 1));
-    const [mesVisible, setMesVisible] = useState(new Date(2026, 0, 1));
+    const [fechaSeleccionada, setFechaSeleccionada] = useState(new Date());
+    const [mesVisible, setMesVisible] = useState(new Date());
     const [mostrarCalendario, setMostrarCalendario] = useState(false);
 
     /* =========================================
