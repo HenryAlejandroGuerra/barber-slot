@@ -427,6 +427,10 @@ export default function ReservasForm() {
                                         value={telefono}
                                         onChange={(event) => setTelefono(event.target.value)}
                                         placeholder="0000-0000"
+                                        pattern="[0-9]{4}-?[0-9]{4}"
+                                        title="Ingresa un teléfono de 8 dígitos, por ejemplo 71234567 o 7123-4567."
+                                        maxLength={9}
+                                        autoComplete="tel"
                                         className="input-base"
                                     />
                                 </label>

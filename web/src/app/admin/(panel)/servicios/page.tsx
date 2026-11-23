@@ -10,6 +10,12 @@ import {
     useState
 } from "react";
 
+// Permite redirigir usuarios a otras páginas.
+import { useRouter } from "next/navigation";
+
+// Permite consultar la sesión y el rol del usuario.
+import { useAuth } from "@/contexts/AuthContext";
+
 import { servicioService } from "@/services/servicio.service";
 
 import type { Servicio } from "@/types/servicio";
@@ -32,6 +38,12 @@ const formularioInicial: FormularioServicio = {
 
 
 export default function ServiciosPage() {
+
+    // Obtenemos la sesión del usuario que inició sesión.
+    const { sesion } = useAuth();
+
+    // Permite redirigir al usuario a otra página.
+    const router = useRouter();
 
     const [servicios, setServicios] =
         useState<Servicio[]>([]);
@@ -56,12 +68,33 @@ export default function ServiciosPage() {
             formularioInicial
         );
 
+    /* =========================================
+CONTROL DE ACCESO POR ROL
+
+La gestión de servicios está reservada
+para los usuarios administradores.
+========================================= */
+
+    useEffect(() => {
+        // Si existe una sesión y el usuario no es
+        // administrador, lo enviamos al Panel de Inicio.
+        if (sesion && sesion.rol !== "administrador") {
+            router.replace("/admin/inicio");
+        }
+    }, [sesion, router]);
 
     /* =========================================
        CARGAR SERVICIOS
     ========================================= */
 
     useEffect(() => {
+
+        // Verificamos que el usuario sea administrador.
+        // Si es barbero o todavía no hay sesión,
+        // evitamos cargar los servicios.
+        if (sesion?.rol !== "administrador") {
+            return;
+        }
 
         async function cargarServicios() {
 
@@ -86,7 +119,7 @@ export default function ServiciosPage() {
 
         cargarServicios();
 
-    }, []);
+    }, [sesion?.rol]);
 
 
     /* =========================================
@@ -227,9 +260,9 @@ export default function ServiciosPage() {
                             descripcion,
                             precio,
                             duracionMinutos:
-                            duracion,
+                                duracion,
                             activo:
-                            servicioEditando.activo
+                                servicioEditando.activo
                         }
                     );
 
@@ -238,7 +271,7 @@ export default function ServiciosPage() {
                         actuales.map(
                             (servicio) =>
                                 servicio.id ===
-                                actualizado.id
+                                    actualizado.id
                                     ? actualizado
                                     : servicio
                         )
@@ -256,7 +289,7 @@ export default function ServiciosPage() {
                         descripcion,
                         precio,
                         duracionMinutos:
-                        duracion,
+                            duracion,
                         activo: true
                     });
 
@@ -320,7 +353,7 @@ export default function ServiciosPage() {
                     actuales.map(
                         (item) =>
                             item.id ===
-                            actualizado.id
+                                actualizado.id
                                 ? actualizado
                                 : item
                     )
@@ -340,6 +373,16 @@ export default function ServiciosPage() {
         }
     }
 
+    /* =========================================
+   PROTECCIÓN VISUAL POR ROL
+
+   Solo los administradores pueden visualizar
+   la pantalla de Gestión de Servicios.
+========================================= */
+
+    if (sesion?.rol !== "administrador") {
+        return null;
+    }
 
     /* =========================================
        CARGANDO
@@ -506,152 +549,152 @@ export default function ServiciosPage() {
 
                         <thead>
 
-                        <tr
-                            className="
+                            <tr
+                                className="
                                     border-b
                                     border-gray-700
                                     text-brand-gold
                                 "
-                        >
+                            >
 
-                            <th className="px-5 py-4 text-left">
-                                Servicio
-                            </th>
+                                <th className="px-5 py-4 text-left">
+                                    Servicio
+                                </th>
 
-                            <th className="px-5 py-4 text-left">
-                                Descripción
-                            </th>
+                                <th className="px-5 py-4 text-left">
+                                    Descripción
+                                </th>
 
-                            <th className="px-5 py-4 text-left">
-                                Precio
-                            </th>
+                                <th className="px-5 py-4 text-left">
+                                    Precio
+                                </th>
 
-                            <th className="px-5 py-4 text-left">
-                                Duración
-                            </th>
+                                <th className="px-5 py-4 text-left">
+                                    Duración
+                                </th>
 
-                            <th className="px-5 py-4 text-left">
-                                Estado
-                            </th>
+                                <th className="px-5 py-4 text-left">
+                                    Estado
+                                </th>
 
-                            <th className="px-5 py-4 text-center">
-                                Acciones
-                            </th>
+                                <th className="px-5 py-4 text-center">
+                                    Acciones
+                                </th>
 
-                        </tr>
+                            </tr>
 
                         </thead>
 
 
                         <tbody>
 
-                        {servicios.length === 0 ? (
+                            {servicios.length === 0 ? (
 
-                            <tr>
+                                <tr>
 
-                                <td
-                                    colSpan={6}
-                                    className="
+                                    <td
+                                        colSpan={6}
+                                        className="
                                             px-6
                                             py-10
                                             text-center
                                             text-brand-gray
                                         "
-                                >
-                                    No hay servicios registrados.
-                                </td>
+                                    >
+                                        No hay servicios registrados.
+                                    </td>
 
-                            </tr>
+                                </tr>
 
-                        ) : (
+                            ) : (
 
-                            servicios.map(
-                                (servicio) => (
+                                servicios.map(
+                                    (servicio) => (
 
-                                    <tr
-                                        key={
-                                            servicio.id
-                                        }
-                                        className="
+                                        <tr
+                                            key={
+                                                servicio.id
+                                            }
+                                            className="
                                                 border-t
                                                 border-gray-800
                                             "
-                                    >
+                                        >
 
-                                        {/* NOMBRE */}
+                                            {/* NOMBRE */}
 
-                                        <td
-                                            className="
+                                            <td
+                                                className="
                                                     px-5
                                                     py-4
                                                     font-semibold
                                                     text-white
                                                 "
-                                        >
-                                            {
-                                                servicio.nombre
-                                            }
-                                        </td>
+                                            >
+                                                {
+                                                    servicio.nombre
+                                                }
+                                            </td>
 
 
-                                        {/* DESCRIPCIÓN */}
+                                            {/* DESCRIPCIÓN */}
 
-                                        <td
-                                            className="
+                                            <td
+                                                className="
                                                     max-w-[300px]
                                                     px-5
                                                     py-4
                                                     text-brand-gray
                                                 "
-                                        >
-                                            {
-                                                servicio.descripcion ||
-                                                "Sin descripción"
-                                            }
-                                        </td>
+                                            >
+                                                {
+                                                    servicio.descripcion ||
+                                                    "Sin descripción"
+                                                }
+                                            </td>
 
 
-                                        {/* PRECIO */}
+                                            {/* PRECIO */}
 
-                                        <td
-                                            className="
+                                            <td
+                                                className="
                                                     px-5
                                                     py-4
                                                 "
-                                        >
-                                            $
-                                            {
-                                                servicio.precio
-                                                    .toFixed(
-                                                        2
-                                                    )
-                                            }
-                                        </td>
+                                            >
+                                                $
+                                                {
+                                                    servicio.precio
+                                                        .toFixed(
+                                                            2
+                                                        )
+                                                }
+                                            </td>
 
 
-                                        {/* DURACIÓN */}
+                                            {/* DURACIÓN */}
 
-                                        <td
-                                            className="
+                                            <td
+                                                className="
                                                     px-5
                                                     py-4
                                                 "
-                                        >
-                                            {
-                                                servicio.duracionMinutos
-                                            }
-                                            {" min"}
-                                        </td>
+                                            >
+                                                {
+                                                    servicio.duracionMinutos
+                                                }
+                                                {" min"}
+                                            </td>
 
 
-                                        {/* ESTADO */}
+                                            {/* ESTADO */}
 
-                                        <td
-                                            className="
+                                            <td
+                                                className="
                                                     px-5
                                                     py-4
                                                 "
-                                        >
+                                            >
 
                                                 <span
                                                     className={`
@@ -663,8 +706,7 @@ export default function ServiciosPage() {
                                                         text-sm
                                                         font-semibold
 
-                                                        ${
-                                                        servicio.activo
+                                                        ${servicio.activo
                                                             ? `
                                                                     border-green-600
                                                                     bg-green-950/40
@@ -675,7 +717,7 @@ export default function ServiciosPage() {
                                                                     bg-red-950/40
                                                                     text-red-400
                                                                 `
-                                                    }
+                                                        }
                                                     `}
                                                 >
 
@@ -687,35 +729,35 @@ export default function ServiciosPage() {
 
                                                 </span>
 
-                                        </td>
+                                            </td>
 
 
-                                        {/* ACCIONES */}
+                                            {/* ACCIONES */}
 
-                                        <td
-                                            className="
+                                            <td
+                                                className="
                                                     px-5
                                                     py-4
                                                 "
-                                        >
+                                            >
 
-                                            <div
-                                                className="
+                                                <div
+                                                    className="
                                                         flex
                                                         items-center
                                                         justify-center
                                                         gap-3
                                                     "
-                                            >
+                                                >
 
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        abrirEdicion(
-                                                            servicio
-                                                        )
-                                                    }
-                                                    className="
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            abrirEdicion(
+                                                                servicio
+                                                            )
+                                                        }
+                                                        className="
                                                             rounded-lg
                                                             border
                                                             border-brand-gold
@@ -727,19 +769,19 @@ export default function ServiciosPage() {
                                                             transition
                                                             hover:bg-yellow-950/40
                                                         "
-                                                >
-                                                    EDITAR
-                                                </button>
+                                                    >
+                                                        EDITAR
+                                                    </button>
 
 
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        cambiarEstado(
-                                                            servicio
-                                                        )
-                                                    }
-                                                    className={`
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            cambiarEstado(
+                                                                servicio
+                                                            )
+                                                        }
+                                                        className={`
                                                             rounded-lg
                                                             border
                                                             px-3
@@ -748,38 +790,37 @@ export default function ServiciosPage() {
                                                             font-semibold
                                                             transition
 
-                                                            ${
-                                                        servicio.activo
-                                                            ? `
+                                                            ${servicio.activo
+                                                                ? `
                                                                         border-red-600
                                                                         text-red-400
                                                                         hover:bg-red-950/40
                                                                     `
-                                                            : `
+                                                                : `
                                                                         border-green-600
                                                                         text-green-400
                                                                         hover:bg-green-950/40
                                                                     `
-                                                    }
+                                                            }
                                                         `}
-                                                >
+                                                    >
 
-                                                    {
-                                                        servicio.activo
-                                                            ? "DESACTIVAR"
-                                                            : "ACTIVAR"
-                                                    }
+                                                        {
+                                                            servicio.activo
+                                                                ? "DESACTIVAR"
+                                                                : "ACTIVAR"
+                                                        }
 
-                                                </button>
+                                                    </button>
 
-                                            </div>
+                                                </div>
 
-                                        </td>
+                                            </td>
 
-                                    </tr>
+                                        </tr>
+                                    )
                                 )
-                            )
-                        )}
+                            )}
 
                         </tbody>
 
@@ -922,9 +963,9 @@ export default function ServiciosPage() {
                                                 {
                                                     ...formulario,
                                                     nombre:
-                                                    event
-                                                        .target
-                                                        .value
+                                                        event
+                                                            .target
+                                                            .value
                                                 }
                                             )
                                     }
@@ -974,9 +1015,9 @@ export default function ServiciosPage() {
                                                 {
                                                     ...formulario,
                                                     descripcion:
-                                                    event
-                                                        .target
-                                                        .value
+                                                        event
+                                                            .target
+                                                            .value
                                                 }
                                             )
                                     }
@@ -1037,9 +1078,9 @@ export default function ServiciosPage() {
                                                     {
                                                         ...formulario,
                                                         precio:
-                                                        event
-                                                            .target
-                                                            .value
+                                                            event
+                                                                .target
+                                                                .value
                                                     }
                                                 )
                                         }
@@ -1089,9 +1130,9 @@ export default function ServiciosPage() {
                                                     {
                                                         ...formulario,
                                                         duracionMinutos:
-                                                        event
-                                                            .target
-                                                            .value
+                                                            event
+                                                                .target
+                                                                .value
                                                     }
                                                 )
                                         }

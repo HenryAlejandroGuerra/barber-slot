@@ -112,7 +112,22 @@ export default function AdminDashboard() {
                 {/* Barberos disponibles */}
                 <aside className="rounded-xl border border-brand-gold bg-brand-dark p-6">
                     <div className="mb-8 flex items-center gap-3">
-                        <Image src="/images/admin/icons/barberos-disponibles.svg" alt="" width={48} height={48} />
+                        {/*
+    Icono de Barberos Disponibles.
+
+    Conservamos las dimensiones originales del SVG
+    y ajustamos su tamaño visual mediante CSS.
+
+    h-auto mantiene la proporción de la imagen.
+*/}
+<Image
+    src="/images/admin/icons/barberos-disponibles.svg"
+    alt=""
+    width={90}
+    height={89}
+    className="w-[48px] h-auto"
+    unoptimized
+/>
                         <h2 className="text-xl font-semibold text-brand-gold">
                             Barberos Disponibles
                         </h2>
