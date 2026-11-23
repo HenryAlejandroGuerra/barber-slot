@@ -4,6 +4,39 @@ BarberSlot es un proyecto académico orientado a la gestión de citas y servicio
 
 El proyecto fue desarrollado para la asignatura **Diseño y Programación de Software Multiplataforma**.
 
+[![Licencia: CC BY-NC-SA 4.0](https://img.shields.io/badge/Licencia-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+## Contexto
+
+BarberSlot se desarrolla para **Barbería Estilo Clásico**, ubicada en Santa Tecla, La Libertad. La barbería atiende por orden de llegada, lo que en horas de alta demanda genera aglomeración y tiempos de espera que el cliente no puede prever.
+
+BarberSlot permite que el cliente agende su cita en línea eligiendo barbero, servicio y horario disponible, y le da al negocio una agenda ordenada y un historial de citas.
+
+## Funcionalidades principales
+
+- Selección del barbero de preferencia.
+- Selección del servicio con su duración y precio.
+- Horarios disponibles calculados según el barbero, la duración del servicio y las citas existentes.
+- Prevención de reservas simultáneas en el mismo horario.
+- Confirmación de la cita en pantalla y por correo electrónico.
+- Panel administrativo con agenda diaria filtrable por barbero.
+- Gestión de servicios (alta, edición y baja) por parte del administrador.
+- Inicio de sesión con correo o con Google mediante Firebase Authentication.
+
+## Mockups
+
+Las interfaces se diseñaron en Figma. El archivo completo puede consultarse en:
+
+[BarberSlot en Figma](https://www.figma.com/design/DtxkBzNf8prr5rXMgWK4zm/BarberSlot?node-id=0-1&t=NpfwyAmPoBClzblo-1)
+
+| Inicio | Selección de barbero |
+|---|---|
+| ![Inicio](docs/mockups/01-web-inicio.png) | ![Selección de barbero](docs/mockups/02-web-reserva-barbero.png) |
+| **Fecha y hora** | **Agenda administrativa** |
+| ![Fecha y hora](docs/mockups/04-web-reserva-fecha-hora.png) | ![Agenda administrativa](docs/mockups/08-web-admin-agenda.png) |
+
+El resto de pantallas, incluida la versión móvil, se encuentra en [`docs/`](docs/README.md).
+
 ## Estructura del repositorio
 
 El repositorio utiliza una estructura tipo monorepo:
@@ -29,7 +62,7 @@ Cada carpeta corresponde a un proyecto independiente y administra sus propias de
 
 ## Arquitectura general
 
-La arquitectura prevista para BarberSlot es:
+La arquitectura de BarberSlot es:
 
 ```text
 BarberSlot Web
@@ -49,7 +82,7 @@ BarberSlot Mobile
 React Native + Expo
 ```
 
-Durante el primer avance móvil, la aplicación React Native utiliza datos mock para poder desarrollar y probar las interfaces sin depender de la API REST.
+La web y la aplicación móvil no acceden directamente a la base de datos: ambas consumen la API REST del backend, desplegada en `https://barberslot-api.vercel.app`. La autenticación se gestiona con Firebase Authentication y el backend valida el token de cada petición.
 
 ## Requisitos generales
 
@@ -231,16 +264,44 @@ No deben subirse al repositorio:
 
 El proyecto contiene:
 
-- Versión web de BarberSlot.
-- Backend independiente en proceso de integración.
-- Versión móvil desarrollada con React Native y Expo.
-- Navegación pública y administrativa.
-- Login móvil con validaciones y usuarios mock.
-- Dashboard administrativo adaptado a dispositivos móviles.
-- Datos mock para permitir el desarrollo móvil sin conexión al backend.
+- Versión web de BarberSlot con reserva de citas en cuatro pasos.
+- Backend independiente con Express, Prisma y PostgreSQL, desplegado en Vercel.
+- Versión móvil desarrollada con React Native y Expo, conectada a la misma API.
+- Navegación pública y administrativa en ambas plataformas.
+- Autenticación con correo y Google mediante Firebase.
+- Historial de reservas del usuario en la aplicación móvil mediante Firestore.
+- Dashboard administrativo, agenda diaria y gestión de servicios.
+
+## Documentación
+
+La carpeta [`docs/`](docs/README.md) contiene los mockups de las pantallas web y móvil. Cada proyecto documenta su instalación y configuración en su propio README:
+
+- [`web/README.md`](web/README.md)
+- [`mobile/README.md`](mobile/README.md)
+- [`backend/README.md`](backend/README.md)
+
+## Equipo
+
+**Grupo E - Solo Devs**
+
+| Integrante | Carnet |
+|---|---|
+| Christopher Neftalí Alvarenga Portillo | AP230492 |
+| Francisco José Durán Crespín | DC253061 |
+| Jonathan Wilfredo Bonilla Erazo | MM120518 |
+| Carlos Francisco Villacorta Fernández | VF161499 |
+| Henry Alejandro Martínez Guerra | MG202016 |
 
 ## Proyecto académico
 
-**Asignatura:** Diseño y Programación de Software Multiplataforma
+**Universidad Don Bosco**
+
+**Asignatura:** Diseño y Programación de Software Multiplataforma (DPS941)
+
+**Docente:** Ing. Carlos Emanuel Dubón Cornejo
 
 **Proyecto:** BarberSlot
+
+## Licencia
+
+Este proyecto se distribuye bajo la licencia [Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/). Puede compartirse y adaptarse dando el crédito correspondiente, sin fines comerciales y distribuyendo las obras derivadas bajo la misma licencia. Consultar el archivo [`LICENSE`](LICENSE).
