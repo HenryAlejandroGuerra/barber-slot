@@ -60,7 +60,20 @@ export default function AdminHeader() {
                             SLOT
                         </span>
                     </div>
-                    <Image src="/images/brand/logo.svg" alt="Logo BarberSlot" width={64} height={64} priority />
+                    {/*
+    Mantiene la proporción original del logotipo SVG.
+
+    El ancho visual será de 64 píxeles,
+    mientras que la altura se ajustará automáticamente.
+*/}
+<Image
+    src="/images/brand/logo.svg"
+    alt="Logo BarberSlot"
+    width={82}
+    height={86}
+    className="w-[64px] h-auto"
+    priority
+/>
                 </Link>
                 {/* Navegación */}
                 <nav className=" flex flex-wrap items-center justify-center gap-6 lg:gap-10" aria-label="Navegación administrativa">

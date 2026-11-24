@@ -18,7 +18,22 @@ export default function AdminLoginPage() {
                             Slot
                         </span>
                     </h1>
-                    <Image src="/images/brand/logo.svg" alt="Logo de BarberSlot" width={72} height={72} priority/>
+                   {/*
+    Logotipo del acceso administrativo.
+
+    Se utilizan las dimensiones originales del SVG
+    y se conserva un ancho visual de 72 píxeles.
+
+    h-auto mantiene la proporción de la imagen.
+*/}
+<Image
+    src="/images/brand/logo.svg"
+    alt="Logo de BarberSlot"
+    width={82}
+    height={86}
+    className="w-[72px] h-auto"
+    priority
+/>
                 </div>
             </header>
             {/* Contenido */}

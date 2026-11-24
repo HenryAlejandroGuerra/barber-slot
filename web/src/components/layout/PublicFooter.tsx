@@ -39,8 +39,10 @@ export default function Footer() {
                                 className="transition hover:scale-105" >
                             <Image src={social.icon}
                                     alt={social.name}
-                                    width={48}
-                                    height={48} />
+                                    width={52}
+                                    height={55}
+                                    className="w-[48px] h-auto"
+                                    />
                         </Link>
                     ))}
                 </div>
