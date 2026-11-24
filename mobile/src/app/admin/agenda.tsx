@@ -2,13 +2,16 @@
     mobile/src/app/admin/agenda.tsx
     Agenda Diaria Administrativa
 ================================================ */
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import AdminScreen from "@/components/admin/AdminScreen";
 import BrandHeader from "@/components/layout/BrandHeader";
 import { COLORS, RADIUS } from "@/constants/theme";
+import { citaService } from "@/services/cita.service";
+import { barberoService } from "@/services/barbero.service";
+import { servicioService } from "@/services/servicio.service";
 
 type EstadoCita = | "confirmada" | "pendiente" | "cancelada";
 
@@ -22,73 +25,27 @@ interface Cita {
     estado: EstadoCita;
 }
 
-/* =========================================
-   DATOS MOCK
-========================================= */
-const CITAS_MOCK: Cita[] = [
-    {
-        id: "1",
-        fecha: "2026-01-01",
-        hora: "09:00 AM",
-        cliente: "Juan Pérez",
-        servicio: "Corte normal",
-        barbero: "Víctor Flores",
-        estado: "confirmada"
-    },
-    {
-        id: "2",
-        fecha: "2026-01-01",
-        hora: "10:30 AM",
-        cliente: "Cristian Castro",
-        servicio: "Solo barba",
-        barbero: "Luis Miguel",
-        estado: "cancelada"
-    },
-    {
-        id: "3",
-        fecha: "2026-01-01",
-        hora: "12:00 PM",
-        cliente: "Carlos Mendoza",
-        servicio: "Corte y barba",
-        barbero: "Andrés Portillo",
-        estado: "pendiente"
-    },
-    {
-        id: "4",
-        fecha: "2026-01-01",
-        hora: "02:00 PM",
-        cliente: "Samuel Anaya",
-        servicio: "Corte normal",
-        barbero: "Víctor Flores",
-        estado: "confirmada"
-    },
-    /* Datos para comprobar el calendario */
-    {
-        id: "5",
-        fecha: "2026-01-02",
-        hora: "11:00 AM",
-        cliente: "Kevin Hernández",
-        servicio: "Corte y barba",
-        barbero: "Luis Miguel",
-        estado: "pendiente"
-    },
-    {
-        id: "6",
-        fecha: "2026-01-02",
-        hora: "03:00 PM",
-        cliente: "Diego Torres",
-        servicio: "Solo barba",
-        barbero: "Andrés Portillo",
-        estado: "confirmada"
-    }
-];
+function convertirFecha(fechaInicio: string) {
+    const fecha = new Date(fechaInicio);
 
-const BARBEROS = [
-    "Todos",
-    "Víctor Flores",
-    "Luis Miguel",
-    "Andrés Portillo"
-];
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const dia = String(fecha.getDate()).padStart(2, "0");
+
+    return `${anio}-${mes}-${dia}`;
+}
+
+function convertirHora(fechaInicio: string) {
+    const fecha = new Date(fechaInicio);
+
+    const horas24 = fecha.getHours();
+    const minutos = String(fecha.getMinutes()).padStart(2, "0");
+
+    const periodo = horas24 >= 12 ? "PM" : "AM";
+    const horas12 = horas24 % 12 || 12;
+
+    return `${String(horas12).padStart(2, "0")}:${minutos} ${periodo}`;
+}
 
 const MESES = [
     "Enero",
@@ -118,9 +75,90 @@ const DIAS_SEMANA = [
 export default function AgendaScreen() {
     const [barberoSeleccionado, setBarberoSeleccionado] = useState("Todos");
     const [mostrarBarberos, setMostrarBarberos] = useState(false);
-    const [fechaSeleccionada, setFechaSeleccionada] = useState(new Date(2026, 0, 1));
-    const [mesVisible, setMesVisible] = useState(new Date(2026, 0, 1));
+    const [fechaSeleccionada, setFechaSeleccionada] = useState(new Date());
+    const [mesVisible, setMesVisible] = useState(new Date());
     const [mostrarCalendario, setMostrarCalendario] = useState(false);
+    const [citas, setCitas] = useState<Cita[]>([]);
+    const [barberos, setBarberos] = useState<string[]>(["Todos"]);
+    const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState("");
+
+    useFocusEffect(
+        useCallback(() => {
+
+            async function cargarAgenda() {
+
+                try {
+
+                    setCargando(true);
+                    setError("");
+
+                    const [
+                        citasData,
+                        barberosData,
+                        serviciosData
+                    ] = await Promise.all([
+                        citaService.obtenerTodas(),
+                        barberoService.obtenerTodos(),
+                        servicioService.obtenerTodos()
+                    ]);
+
+                    const citasAdaptadas: Cita[] =
+                        citasData.map((cita) => {
+
+                            const barbero =
+                                barberosData.find(
+                                    (item) =>
+                                        item.id === cita.barberoId
+                                );
+
+                            const servicio =
+                                serviciosData.find(
+                                    (item) =>
+                                        item.id === cita.servicioId
+                                );
+
+                            return {
+                                id: cita.id,
+                                fecha: convertirFecha(cita.fechaInicio),
+                                hora: convertirHora(cita.fechaInicio),
+                                cliente: cita.cliente.nombre,
+                                servicio: servicio?.nombre ?? "Sin servicio",
+                                barbero: barbero?.nombre ?? "Sin barbero",
+                                estado: cita.estado
+                            };
+                        });
+
+                    setCitas(citasAdaptadas);
+
+                    setBarberos([
+                        "Todos",
+                        ...barberosData.map(
+                            (barbero) => barbero.nombre
+                        )
+                    ]);
+
+                } catch (error) {
+
+                    console.error(
+                        "Error cargando agenda:",
+                        error
+                    );
+
+                    setError(
+                        "No fue posible cargar las citas."
+                    );
+
+                } finally {
+
+                    setCargando(false);
+                }
+            }
+
+            cargarAgenda();
+
+        }, [])
+    );
 
     /* =========================================
        FORMATO DE FECHA
@@ -143,12 +181,21 @@ export default function AgendaScreen() {
        FILTRAR CITAS
     ========================================= */
     const citasFiltradas = useMemo(() => {
-        return CITAS_MOCK.filter((cita) => {
-            const coincideFecha = cita.fecha === fechaISO(fechaSeleccionada);
-            const coincideBarbero = barberoSeleccionado === "Todos" || cita.barbero === barberoSeleccionado;
-            return (coincideFecha && coincideBarbero);
+        return citas.filter((cita) => {
+            const coincideFecha =
+                cita.fecha === fechaISO(fechaSeleccionada);
+
+            const coincideBarbero =
+                barberoSeleccionado === "Todos" ||
+                cita.barbero === barberoSeleccionado;
+
+            return coincideFecha && coincideBarbero;
         });
-    }, [fechaSeleccionada, barberoSeleccionado]);
+    }, [
+        citas,
+        fechaSeleccionada,
+        barberoSeleccionado
+    ]);
 
     /* =========================================
        CALENDARIO
@@ -261,7 +308,7 @@ export default function AgendaScreen() {
                     {mostrarBarberos && (
                         <View style={styles.dropdown}>
 
-                            {BARBEROS.map(
+                            {barberos.map(
                                 (
                                     barbero,
                                     index
@@ -273,7 +320,7 @@ export default function AgendaScreen() {
                                             styles.dropdownItem,
 
                                             index <
-                                            BARBEROS.length - 1 &&
+                                            barberos.length - 1 &&
                                             styles.dropdownBorder
                                         ]}
                                         onPress={() => {
@@ -314,7 +361,19 @@ export default function AgendaScreen() {
 
                 <View style={styles.appointmentsCard}>
 
-                    {citasFiltradas.length === 0 ? (
+                    {cargando ? (
+
+                        <Text style={styles.emptyText}>
+                            Cargando citas...
+                        </Text>
+
+                    ) : error ? (
+
+                        <Text style={styles.emptyText}>
+                            {error}
+                        </Text>
+
+                    ) : citasFiltradas.length === 0 ? (
 
                         <Text style={styles.emptyText}>
                             No hay citas para esta fecha y barbero.

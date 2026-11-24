@@ -1,9 +1,25 @@
 import { apiFetch } from "@/lib/apiFetch";
 
+export type EstadoCitaApi =
+    | "pendiente"
+    | "confirmada"
+    | "cancelada";
+
+export interface CitaApi {
+    id: string;
+    barberoId: string;
+    servicioId: string;
+    fechaInicio: string;
+    estado: EstadoCitaApi;
+    cliente: {
+        nombre: string;
+    };
+}
+
 export interface CitaCreada {
     id: string;
     fechaInicio: string;
-    estado: "pendiente" | "confirmada" | "cancelada";
+    estado: EstadoCitaApi;
 }
 
 interface DatosNuevaCita {
@@ -21,16 +37,38 @@ function fechaParaApi(fecha: string): string {
     return `${anio}-${mes}-${dia}`;
 }
 
-async function obtenerDisponibilidad(barberoId: string, servicioId: string, fecha: string): Promise<string[]> {
-    const parametros = new URLSearchParams({ barberoId, servicioId, fecha: fechaParaApi(fecha) });
-    const respuesta = await apiFetch<{ horarios: string[] }>(`/api/disponibilidad?${parametros}`);
+async function obtenerTodas(): Promise<CitaApi[]> {
+    return apiFetch<CitaApi[]>("/api/citas");
+}
+
+async function obtenerDisponibilidad(
+    barberoId: string,
+    servicioId: string,
+    fecha: string
+): Promise<string[]> {
+
+    const parametros = new URLSearchParams({
+        barberoId,
+        servicioId,
+        fecha: fechaParaApi(fecha)
+    });
+
+    const respuesta = await apiFetch<{ horarios: string[] }>(
+        `/api/disponibilidad?${parametros}`
+    );
+
     return respuesta.horarios;
 }
 
-async function crear(datos: DatosNuevaCita): Promise<CitaCreada> {
+async function crear(
+    datos: DatosNuevaCita
+): Promise<CitaCreada> {
+
     return apiFetch<CitaCreada>("/api/citas", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify({
             nombreCliente: datos.nombreCliente,
             correoCliente: datos.correoCliente,
@@ -38,9 +76,13 @@ async function crear(datos: DatosNuevaCita): Promise<CitaCreada> {
             barberoId: datos.barberoId,
             servicioId: datos.servicioId,
             fecha: fechaParaApi(datos.fecha),
-            hora: datos.hora,
-        }),
+            hora: datos.hora
+        })
     });
 }
 
-export const citaService = { obtenerDisponibilidad, crear };
+export const citaService = {
+    obtenerTodas,
+    obtenerDisponibilidad,
+    crear
+};
