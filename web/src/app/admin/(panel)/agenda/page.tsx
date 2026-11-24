@@ -472,7 +472,7 @@ export default function AgendaPage() {
                 className="
                     relative
                     mt-12
-                    overflow-visible
+                    overflow-x-auto
                     rounded-xl
                     border
                     border-brand-gold

@@ -3,7 +3,6 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-
 import { obtenerFechaLocalISO } from "@/lib/fechas";
 import { barberoService } from "@/services/barbero.service";
 import { servicioService } from "@/services/servicio.service";
@@ -16,12 +15,7 @@ type Paso = 1 | 2 | 3 | 4;
 
 // Iniciales para el marcador de posición cuando un barbero no tiene foto.
 function calcularIniciales(nombre: string): string {
-    return nombre
-        .split(" ")
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((palabra) => palabra[0]?.toUpperCase() ?? "")
-        .join("");
+    return nombre.split(" ").filter(Boolean).slice(0, 2).map((palabra) => palabra[0]?.toUpperCase() ?? "").join("");
 }
 
 // Se agrega la hora del mediodía para evitar cambios de fecha por la zona horaria.
@@ -33,7 +27,7 @@ function formatearFecha(fecha: string) {
         weekday: "long",
         day: "numeric",
         month: "long",
-        year: "numeric",
+        year: "numeric"
     }).format(new Date(`${fecha}T12:00:00`));
 }
 
@@ -79,11 +73,8 @@ export default function ReservasForm() {
         cargarCatalogo();
     }, []);
 
-    // Los horarios disponibles dependen del barbero, el servicio y la fecha
-    // elegidos, así que se recalculan contra la API cada vez que cambian.
-    // Se guarda junto con la combinación consultada: si la selección cambió y
-    // la respuesta aún no llega, la lista anterior no se muestra y se sabe que
-    // todavía se está cargando.
+    // Los horarios disponibles dependen del barbero, el servicio y la fecha elegidos, así que se recalculan contra la API cada vez que cambian.
+    // Se guarda junto con la combinación consultada: si la selección cambió y la respuesta aún no llega, la lista anterior no se muestra y se sabe que todavía se está cargando.
     const claveHorarios = `${barberoId}|${servicioId}|${fecha}`;
     const [horarios, setHorarios] = useState({ clave: "", lista: [] as string[] });
     const horariosDisponibles = horarios.clave === claveHorarios ? horarios.lista : [];
@@ -115,11 +106,11 @@ export default function ReservasForm() {
     // Se recalculan únicamente cuando cambia el identificador seleccionado.
     const barberoSeleccionado = useMemo(
         () => barberos.find((barbero) => barbero.id === barberoId),
-        [barberos, barberoId],
+        [barberos, barberoId]
     );
     const servicioSeleccionado = useMemo(
         () => servicios.find((servicio) => servicio.id === servicioId),
-        [servicios, servicioId],
+        [servicios, servicioId]
     );
 
     function siguientePaso() {
@@ -171,7 +162,7 @@ export default function ReservasForm() {
                 idBarbero: barberoSeleccionado.id,
                 idServicio: servicioSeleccionado.id,
                 fecha,
-                hora,
+                hora
             });
 
             setConfirmada(true);
@@ -427,6 +418,10 @@ export default function ReservasForm() {
                                         value={telefono}
                                         onChange={(event) => setTelefono(event.target.value)}
                                         placeholder="0000-0000"
+                                        pattern="[0-9]{4}-?[0-9]{4}"
+                                        title="Ingresa un teléfono de 8 dígitos, por ejemplo 71234567 o 7123-4567."
+                                        maxLength={9}
+                                        autoComplete="tel"
                                         className="input-base"
                                     />
                                 </label>
