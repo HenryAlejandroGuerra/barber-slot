@@ -3,17 +3,205 @@
     Dashboard principal del módulo administrativo
 ===================================================== */
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import AdminScreen from "@/components/admin/AdminScreen";
 import DashboardCard from "@/components/admin/DashboardCard";
 import BrandHeader from "@/components/layout/BrandHeader";
 import { COLORS, RADIUS } from "@/constants/theme";
 import { IMAGES } from "@/constants/images";
-import { dashboardMock } from "@/data/mock/dashboard.mock";
 import { authService } from "@/services/auth.service";
+import { useCallback, useState } from "react";
+import { citaService } from "@/services/cita.service";
+import { barberoService } from "@/services/barbero.service";
+import { servicioService } from "@/services/servicio.service";
+
+interface CitaInicio {
+    id: string;
+    hora: string;
+    cliente: string;
+    servicio: string;
+    barbero: string;
+    estado: "pendiente" | "confirmada" | "cancelada";
+}
+
+function convertirFecha(fechaInicio: string) {
+    const fecha = new Date(fechaInicio);
+
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const dia = String(fecha.getDate()).padStart(2, "0");
+
+    return `${anio}-${mes}-${dia}`;
+}
+
+function convertirHora(fechaInicio: string) {
+    const fecha = new Date(fechaInicio);
+
+    const horas24 = fecha.getHours();
+    const minutos = String(fecha.getMinutes()).padStart(2, "0");
+
+    const periodo = horas24 >= 12 ? "PM" : "AM";
+    const horas12 = horas24 % 12 || 12;
+
+    return `${String(horas12).padStart(2, "0")}:${minutos} ${periodo}`;
+}
+
+function obtenerFechaHoyISO() {
+    return convertirFecha(new Date().toISOString());
+}
 
 export default function AdminInicioScreen() {
-    const { resumen, citasNuevas, barberosDisponibles } = dashboardMock;
+
+    const [citasNuevas, setCitasNuevas] = useState<CitaInicio[]>([]);
+    const [barberosDisponibles, setBarberosDisponibles] = useState<
+        { id: string; nombre: string }[]
+    >([]);
+
+    const [resumen, setResumen] = useState({
+        citasHoy: 0,
+        nuevasCitas: 0,
+        canceladas: 0,
+        serviciosActivos: 0
+    });
+
+    const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState("");
+
+    useFocusEffect(
+        useCallback(() => {
+
+            async function cargarDashboard() {
+
+                try {
+
+                    setCargando(true);
+                    setError("");
+
+                    const [
+                        citasData,
+                        barberosData,
+                        serviciosData
+                    ] = await Promise.all([
+                        citaService.obtenerTodas(),
+                        barberoService.obtenerTodos(),
+                        servicioService.obtenerTodos()
+                    ]);
+
+                    const hoy = obtenerFechaHoyISO();
+
+                    const citasHoy = citasData.filter(
+                        (cita) =>
+                            convertirFecha(cita.fechaInicio) === hoy
+                    );
+
+                    const citasAdaptadas: CitaInicio[] =
+                        citasHoy.map((cita) => {
+
+                            const barbero =
+                                barberosData.find(
+                                    (item) =>
+                                        item.id === cita.barberoId
+                                );
+
+                            const servicio =
+                                serviciosData.find(
+                                    (item) =>
+                                        item.id === cita.servicioId
+                                );
+
+                            return {
+                                id: cita.id,
+                                hora: convertirHora(cita.fechaInicio),
+                                cliente: cita.cliente.nombre,
+                                servicio:
+                                    servicio?.nombre ?? "Sin servicio",
+                                barbero:
+                                    barbero?.nombre ?? "Sin barbero",
+                                estado: cita.estado
+                            };
+                        });
+
+                    const citasOrdenadas = citasAdaptadas.sort((a, b) => {
+                        const convertirAMinutos = (hora: string) => {
+                            const [horaMinuto, periodo] = hora.split(" ");
+                            const [horasTexto, minutosTexto] = horaMinuto.split(":");
+
+                            let horas = Number(horasTexto);
+                            const minutos = Number(minutosTexto);
+
+                            if (periodo === "PM" && horas !== 12) {
+                                horas += 12;
+                            }
+
+                            if (periodo === "AM" && horas === 12) {
+                                horas = 0;
+                            }
+
+                            return horas * 60 + minutos;
+                        };
+
+                        return convertirAMinutos(a.hora) - convertirAMinutos(b.hora);
+                    });
+
+                    setCitasNuevas(citasOrdenadas);
+
+                    setBarberosDisponibles(
+                        barberosData
+                            .filter(
+                                (barbero) =>
+                                    barbero.activo &&
+                                    barbero.disponible
+                            )
+                            .map((barbero) => ({
+                                id: barbero.id,
+                                nombre: barbero.nombre
+                            }))
+                    );
+
+                    setResumen({
+                        citasHoy:
+                        citasHoy.length,
+
+                        nuevasCitas:
+                        citasHoy.filter(
+                            (cita) =>
+                                cita.estado === "pendiente"
+                        ).length,
+
+                        canceladas:
+                        citasHoy.filter(
+                            (cita) =>
+                                cita.estado === "cancelada"
+                        ).length,
+
+                        serviciosActivos:
+                        serviciosData.filter(
+                            (servicio) =>
+                                servicio.activo
+                        ).length
+                    });
+
+                } catch (error) {
+
+                    console.error(
+                        "Error cargando dashboard:",
+                        error
+                    );
+
+                    setError(
+                        "No fue posible cargar el resumen."
+                    );
+
+                } finally {
+
+                    setCargando(false);
+                }
+            }
+
+            cargarDashboard();
+
+        }, [])
+    );
 
     async function cerrarSesion() {
         try {
@@ -77,47 +265,85 @@ export default function AdminInicioScreen() {
                 <View style={styles.sectionHeader}>
                     <Image source={IMAGES.admin.nuevasCitas} style={styles.sectionIcon} resizeMode="contain" />
                     <Text style={styles.sectionHeaderText}>
-                        Citas Nuevas Agendadas
+                        Citas de Hoy
                     </Text>
                 </View>
 
                 <View style={styles.appointmentsCard}>
-                    {citasNuevas.map((cita, index) => (
-                        <View key={cita.id} style={[
-                            styles.appointment, index < citasNuevas.length - 1 && styles.appointmentBorder
-                        ]}>
-                            <View style={styles.appointmentTop}>
-                                <Text style={styles.appointmentTime}>
-                                    {cita.hora}
-                                </Text>
-                                <Text style={styles.appointmentStatus}>
-                                    Nueva
-                                </Text>
-                            </View>
+                    {cargando ? (
 
-                            <Text style={styles.appointmentClient}>
-                                {cita.cliente}
-                            </Text>
+                        <Text style={styles.emptyText}>
+                            Cargando citas...
+                        </Text>
 
-                            <View style={styles.appointmentDetails}>
-                                <Text style={styles.detailLabel}>
-                                    Servicio:
-                                </Text>
-                                <Text style={styles.detailValue}>
-                                    { cita.servicio }
-                                </Text>
-                            </View>
+                    ) : error ? (
 
-                            <View style={styles.appointmentDetails}>
-                                <Text style={styles.detailLabel}>
-                                    Barbero:
+                        <Text style={styles.emptyText}>
+                            {error}
+                        </Text>
+
+                    ) : citasNuevas.length === 0 ? (
+
+                        <Text style={styles.emptyText}>
+                            No hay citas programadas para hoy.
+                        </Text>
+
+                    ) : (
+
+                        citasNuevas.map((cita, index) => (
+
+                            <View
+                                key={cita.id}
+                                style={[
+                                    styles.appointment,
+                                    index < citasNuevas.length - 1 &&
+                                    styles.appointmentBorder
+                                ]}
+                            >
+
+                                <View style={styles.appointmentTop}>
+
+                                    <Text style={styles.appointmentTime}>
+                                        {cita.hora}
+                                    </Text>
+
+                                    <Text style={styles.appointmentStatus}>
+                                        {cita.estado === "pendiente"
+                                            ? "Pendiente"
+                                            : cita.estado === "confirmada"
+                                                ? "Confirmada"
+                                                : "Cancelada"}
+                                    </Text>
+
+                                </View>
+
+                                <Text style={styles.appointmentClient}>
+                                    {cita.cliente}
                                 </Text>
-                                <Text style={styles.detailValue}>
-                                    { cita.barbero }
-                                </Text>
+
+                                <View style={styles.appointmentDetails}>
+                                    <Text style={styles.detailLabel}>
+                                        Servicio:
+                                    </Text>
+
+                                    <Text style={styles.detailValue}>
+                                        {cita.servicio}
+                                    </Text>
+                                </View>
+
+                                <View style={styles.appointmentDetails}>
+                                    <Text style={styles.detailLabel}>
+                                        Barbero:
+                                    </Text>
+
+                                    <Text style={styles.detailValue}>
+                                        {cita.barbero}
+                                    </Text>
+                                </View>
+
                             </View>
-                        </View>
-                    ))}
+                        ))
+                    )}
                 </View>
 
                 {/* Barberos disponibles */}
@@ -239,6 +465,13 @@ const styles = StyleSheet.create({
         borderColor: COLORS.adminBorder,
         borderRadius: RADIUS.md,
         backgroundColor: COLORS.adminSurface
+    },
+    emptyText: {
+        paddingVertical: 28,
+        textAlign: "center",
+        fontFamily: "Montserrat_500Medium",
+        fontSize: 13,
+        color: COLORS.textSecondary
     },
     appointment: {
         paddingVertical: 18
